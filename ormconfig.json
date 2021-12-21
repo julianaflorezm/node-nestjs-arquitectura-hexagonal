@@ -1,0 +1,14 @@
+{
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "my-bank",
+    "password": "my-bank",
+    "database": "my-bank",
+    "entities": ["dist/**/*.entidad{.ts,.js}"],
+    "migrationsTableName": "migration_history",
+    "migrations": ["dist/infraestructura/migraciones/*.js"],
+    "cli": {
+      "migrationsDir": "src/infraestructura/migraciones"
+    }
+  }
