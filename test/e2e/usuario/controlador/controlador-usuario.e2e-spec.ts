@@ -113,25 +113,18 @@ describe('Pruebas al controlador de usuarios', () => {
     expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
   });
 
-  // it('debería registar un usuario no existente', async () => {
-  //   const usuario: ComandoRegistrarUsuario = {
-  //     nombre: 'Lorem ipsum',
-  //     clave: '1234',
-  //   };
-  //   const usuarioCreado: any = {
-  //     id: 1,
-  //     nombre: "Lorem ipsum",
-  //     created_at: "Mon, 20 Dec 2021 19:09:56 GMT",
-  //     updated_at: "Mon, 20 Dec 2021 19:09:56 GMT"
-  // }
-  //   // const usuarioCreado: any = {}; //revisar
-  //   repositorioUsuario.existeNombreUsuario.returns(Promise.resolve(false));
+  it('debería registar un usuario no existente', async () => {
+    const usuario: ComandoRegistrarUsuario = {
+      nombre: 'Lorem ipsum',
+      clave: '1234',
+    };
 
-  //   return await request(app.getHttpServer())
-  //     .post('/users').send(usuario)
-  //     .expect(HttpStatus.CREATED)
-  //     .expect(usuarioCreado);
-  // });
+    repositorioUsuario.existeNombreUsuario.returns(Promise.resolve(false));
+
+    return await request(app.getHttpServer())
+      .post('/users').send(usuario)
+      .expect(HttpStatus.CREATED);
+  });
 
   it('debería fallar al buscar un usuario no existente', async () => {
     const id = 2;
@@ -147,22 +140,14 @@ describe('Pruebas al controlador de usuarios', () => {
     expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
   });
 
-  // it('debería buscar un usuario existente', async () => {
-  //   const id = 2;
+  it('debería buscar un usuario existente', async () => {
+    const id = 2;
 
-  //   repositorioUsuario.existeUsuario.returns(Promise.resolve(true));
+    repositorioUsuario.existeUsuario.returns(Promise.resolve(true));
 
-  //   const usuario: any = {
-  //     id: 2,
-  //     nombre: "Lorem ipsum",
-  //     created_at: "Mon, 20 Dec 2021 19:09:56 GMT",
-  //     updated_at: "Mon, 20 Dec 2021 19:09:56 GMT"
-  //   }
+    return request(app.getHttpServer())
+      .get('/users/' + id)
+      .expect(HttpStatus.OK);
 
-  //   return request(app.getHttpServer())
-  //     .get('/users/' + id)
-  //     .expect(HttpStatus.OK)
-  //     .expect(usuario);
-
-  // });
+  });
 });
