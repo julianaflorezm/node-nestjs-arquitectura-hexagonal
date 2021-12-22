@@ -35,13 +35,13 @@ pipeline{
 			stage('Unit Test') {
 				steps {
 					echo "------------>Testing<------------"
-					sh 'npm run test'
+					sh 'npm run test:unit'
 				}
 			}
 			stage('Test end-to-end') {
 				steps{
 					echo "------------>Testing Protractor<------------"
-					sh 'npm run e2e'
+					sh 'npm run test:e2e'
 				}
 			}
 
