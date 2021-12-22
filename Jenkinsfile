@@ -48,7 +48,7 @@ pipeline{
 			stage('Static Code Analysis') {
 				steps{
 					sonarqubeMasQualityGatesP(sonarKey:'co.com.ceiba.adn:banco-juliana.florez', 
-					sonarName:'CeibaADN-Banco(juliana.florez)', 
+					sonarName:'CeibaADN-Banco.juliana.florez', 
 					sonarPathProperties:'./sonar-project.properties')
 				}
 			}
