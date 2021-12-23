@@ -12,15 +12,10 @@ export class DaoUsuarioPostgres implements DaoUsuario {
   ) {}
 
   buscarUsuario(id: number): Promise<UsuarioDto> {
-     return this.entityManager.query(
-      'SELECT id, nombre, created_at, updated_at FROM public.user where id = ' + id,
-    );
+     return this.entityManager.query(`SELECT id, nombre, created_at, updated_at FROM public.user where id = ${id}`);
   }
 
   async listar(): Promise<UsuarioDto[]> {
-    return this.entityManager.query(
-      'SELECT id, nombre, created_at, updated_at FROM public.user',
-    );
+    return this.entityManager.query('SELECT id, nombre, created_at, updated_at FROM public.user');
   }
-
 }
