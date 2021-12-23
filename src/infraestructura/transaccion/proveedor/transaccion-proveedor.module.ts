@@ -33,5 +33,4 @@ import { servicioRealizarTransaccionProveedor } from './servicio/servicio-realiz
   })
   export class TransaccionProveedorModule {
   
-  }
-  
+}

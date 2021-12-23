@@ -34,5 +34,3 @@ export class ServicioRealizarTransaccion {
       return response;
     }
   }
-  
-  

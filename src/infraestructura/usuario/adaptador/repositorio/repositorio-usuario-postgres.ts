@@ -22,7 +22,7 @@ export class RepositorioUsuarioPostgres implements RepositorioUsuario {
 
   buscarUsuario(id: number): Promise<UsuarioDto> {
     return this._daoUsuario.buscarUsuario(id);
-  };
+  }
 
   async existeNombreUsuario(nombre: string): Promise<boolean> {
     return (await this.repositorio.count({ nombre })) > 0;

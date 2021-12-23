@@ -5,5 +5,3 @@ export const repositorioCuentaProvider = {
     provide: RepositorioCuenta,
     useClass: RepositorioCuentaPostgres,
 };
-
-  
