@@ -12,7 +12,6 @@ export class TransaccionControlador {
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   async crear(@Body() comandoRealizarTransaccion: ComandoRealizarTransaccion): Promise<TransaccionDto> {
-    const manejador = await this._manejadorRealizarTransaccion.ejecutar(comandoRealizarTransaccion);
-    return manejador;
+    return await this._manejadorRealizarTransaccion.ejecutar(comandoRealizarTransaccion);
   }
 }

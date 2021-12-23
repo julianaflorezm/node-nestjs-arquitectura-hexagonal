@@ -12,7 +12,6 @@ export class ServicioRegistrarUsuario {
     if (await this._repositorioUsuario.existeNombreUsuario(usuario.nombre)) {
       throw new ErrorDeNegocio(`El nombre de usuario ${usuario.nombre} ya existe`);
     }
-    const repositorio = await this._repositorioUsuario.guardar(usuario);
-    return repositorio;
+    return await this._repositorioUsuario.guardar(usuario);
   }
 }

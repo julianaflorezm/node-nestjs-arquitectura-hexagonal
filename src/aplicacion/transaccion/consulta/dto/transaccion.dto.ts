@@ -29,7 +29,5 @@ export class TransaccionDto {
         this.createdAt = createdAt;
         this.origen = origen;
         this.destino = destino;
-        
     }
-
 }

@@ -12,7 +12,6 @@ export class CuentaControlador {
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   async crear(@Body() comandoCrearCuenta: ComandoCrearCuenta): Promise<CuentaDto> {
-    const manejador = await this._manejadorCrearCuenta.ejecutar(comandoCrearCuenta);
-    return manejador;
+    return await this._manejadorCrearCuenta.ejecutar(comandoCrearCuenta);
   }
 }

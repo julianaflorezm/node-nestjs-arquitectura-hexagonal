@@ -1,9 +1,9 @@
 import * as Holidays from 'date-holidays';
 import moment = require('moment-timezone');
-import { BASE, FIN_HORARIO, INICIO_HORARIO } from './constantes-comunes';
 
 export function randomFixedInteger(length): number {
-    return Math.floor(Math.pow(BASE, length-1) + Math.random() * (Math.pow(BASE, length) - Math.pow(BASE, length-1) - 1));
+    const base = 10;
+    return Math.floor(Math.pow(base, length-1) + Math.random() * (Math.pow(base, length) - Math.pow(base, length-1) - 1));
 }
 
 export function isHoliday(date: Date) {
@@ -24,8 +24,10 @@ export function isEnabledDay(date) {
 }
 
 export function canCreateAccount(date) {
+    const inicioHorario = 8;
+    const finHorario = 12;
     if(!isEnabledDay(date)) {
-        if(date.hour() < INICIO_HORARIO || date.hour() > FIN_HORARIO  ) {
+        if(date.hour() < inicioHorario || date.hour() > finHorario  ) {
             return false;
         }
         return true;

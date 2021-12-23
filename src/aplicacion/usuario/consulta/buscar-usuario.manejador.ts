@@ -8,7 +8,6 @@ export class ManejadorBuscarUsuario {
   constructor(private _servicioBuscarUsuario: ServicioBuscarUsuario) {}
 
   async ejecutar(consultaBuscarUsuario: ConsultaBuscarUsuario): Promise<UsuarioDto> {
-    const servicio = await this._servicioBuscarUsuario.ejecutar(consultaBuscarUsuario.id);
-    return servicio;
+    return await this._servicioBuscarUsuario.ejecutar(consultaBuscarUsuario.id);
   }
 }

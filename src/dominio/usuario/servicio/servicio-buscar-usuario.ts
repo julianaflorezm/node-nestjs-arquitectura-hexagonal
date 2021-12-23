@@ -9,7 +9,6 @@ export class ServicioBuscarUsuario {
     if (!await this._repositorioUsuario.existeUsuario(id)) {
         throw new ErrorDeNegocio(`El usuario no existe`);
     }
-    const repositorio = await this._repositorioUsuario.buscarUsuario(id);
-    return repositorio;
+    return await this._repositorioUsuario.buscarUsuario(id);
   }
 }

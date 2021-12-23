@@ -62,6 +62,6 @@ export class RepositorioTransaccionPostgres implements RepositorioTransaccion {
     }
 
     async buscarCuenta(numeroCuenta: number): Promise<CuentaEntidad> {
-      return (await this.repositorioCuenta.findOne( { numeroCuenta }));
+      return await this.repositorioCuenta.findOne( { numeroCuenta });
     }
 }

@@ -9,13 +9,12 @@ export class ManejadorRealizarTransaccion {
   constructor(private _servicioRealizarTransaccion: ServicioRealizarTransaccion) {}
 
   async ejecutar(comandoRealizarTransaccion: ComandoRealizarTransaccion): Promise<TransaccionDto> {
-    const servicio = await this._servicioRealizarTransaccion.ejecutar(
+    return await this._servicioRealizarTransaccion.ejecutar(
       new Transaccion(
         comandoRealizarTransaccion.valor,
         comandoRealizarTransaccion.cuentaOrigen,
         comandoRealizarTransaccion.cuentaDestino
       ),
     );
-    return servicio;
   }
 }

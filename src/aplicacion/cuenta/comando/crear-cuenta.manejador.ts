@@ -10,12 +10,11 @@ export class ManejadorCrearCuenta {
 
   async ejecutar(comandoCrearCuenta: ComandoCrearCuenta): Promise<CuentaDto> {
   
-    const servicio = await this._servicioCrarCuenta.ejecutar(
+    return await this._servicioCrarCuenta.ejecutar(
       new Cuenta(
         comandoCrearCuenta.saldo,
         comandoCrearCuenta.usuarioId,
       )
     );
-    return servicio;
   }
 }

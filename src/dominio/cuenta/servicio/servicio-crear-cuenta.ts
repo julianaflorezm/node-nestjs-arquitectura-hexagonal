@@ -24,7 +24,6 @@ export class ServicioCrearCuenta {
           `El horario para crear una cuenta los días no hábiles es de 8:00 a 12:00 am.`,
         );
     }
-    const repositorio = await this._repositorioCuenta.crear(cuenta);
-    return repositorio;
+    return await this._repositorioCuenta.crear(cuenta);
   }
 }

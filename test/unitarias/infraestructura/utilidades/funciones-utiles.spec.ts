@@ -5,7 +5,7 @@ describe('Funciones utiles', () => {
     it('deberia generar un numero con el numero de digitos indicado', () => {
       const digitos = 6;
       
-      const numero = randomFixedInteger(digitos);
+      const numero:number = randomFixedInteger(digitos);
   
       expect(numero.toString()).toHaveLength(6);
     });
