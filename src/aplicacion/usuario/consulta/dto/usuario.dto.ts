@@ -5,7 +5,7 @@ export class UsuarioDto {
   @ApiProperty({ example: 1 })
   id: number;
 
-  @ApiProperty({ example: 'William' })
+  @ApiProperty({ example: 'Wilzliam' })
   nombre: string;
 
   @ApiProperty({ type: Date })

@@ -1,14 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { CuentaDto } from "src/aplicacion/cuenta/consulta/dto/cuenta.dto";
-import { TransaccionDto } from "src/aplicacion/transaccion/consulta/dto/transaccion.dto";
-import { Transaccion } from "src/dominio/transaccion/modelo/transaccion";
-import { RepositorioTransaccion } from "src/dominio/transaccion/puerto/repositorio/repositorio-transaccion";
-import { CuentaEntidad } from "src/infraestructura/cuenta/entidad/cuenta.entidad";
-import { COSTO_DIA_NO_HABIL_TRANSACCION, COSTO_HABITUAL_TRANSACCION, TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from "src/infraestructura/utilidades/constantes-comunes";
-import { getDateFormat, isEnabledDay } from "src/infraestructura/utilidades/funciones-utiles";
-import { Repository } from "typeorm";
-import { TransaccionEntidad } from "../../entidad/transaccion.entidad";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
+import { TransaccionDto } from 'src/aplicacion/transaccion/consulta/dto/transaccion.dto';
+import { Transaccion } from 'src/dominio/transaccion/modelo/transaccion';
+import { RepositorioTransaccion } from 'src/dominio/transaccion/puerto/repositorio/repositorio-transaccion';
+import { CuentaEntidad } from 'src/infraestructura/cuenta/entidad/cuenta.entidad';
+import { COSTO_DIA_NO_HABIL_TRANSACCION, COSTO_HABITUAL_TRANSACCION, TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from 'src/infraestructura/utilidades/constantes-comunes';
+import { getDateFormat, isEnabledDay } from 'src/infraestructura/utilidades/funciones-utiles';
+import { Repository } from 'typeorm';
+import { TransaccionEntidad } from '../../entidad/transaccion.entidad';
 
 @Injectable()
 export class RepositorioTransaccionPostgres implements RepositorioTransaccion {
@@ -39,7 +39,7 @@ export class RepositorioTransaccionPostgres implements RepositorioTransaccion {
           trasaccionOrigenCreada.id,
           trasaccionDestinoCreada.valor,
           trasaccionOrigenCreada.costo,
-          trasaccionOrigenCreada.created_at.toISOString(),
+          trasaccionOrigenCreada.createdAt.toISOString(),
           origenDto,
           destinoDto
         );
@@ -57,7 +57,11 @@ export class RepositorioTransaccionPostgres implements RepositorioTransaccion {
       } else {
         transaccionEntidad.costo = 0;
       }
-      transaccionEntidad.cuenta = validacion ? await this.repositorioCuenta.findOne( { numeroCuenta: transaccion.cuentaOrigen }) : await this.repositorioCuenta.findOne({ where: { numeroCuenta: transaccion.cuentaDestino }});
+      transaccionEntidad.cuenta = validacion ? await this.buscarCuenta(transaccion.cuentaOrigen) : await this.buscarCuenta(transaccion.cuentaDestino);
       return transaccionEntidad;
+    }
+
+    async buscarCuenta(numeroCuenta: number): Promise<CuentaEntidad> {
+      return (await this.repositorioCuenta.findOne( { numeroCuenta }));
     }
 }

@@ -10,10 +10,9 @@ export class ServicioRegistrarUsuario {
 
   async ejecutar(usuario: Usuario): Promise<UsuarioDto>{
     if (await this._repositorioUsuario.existeNombreUsuario(usuario.nombre)) {
-      throw new ErrorDeNegocio(
-        `El nombre de usuario ${usuario.nombre} ya existe`,
-      );
+      throw new ErrorDeNegocio(`El nombre de usuario ${usuario.nombre} ya existe`);
     }
-    return await this._repositorioUsuario.guardar(usuario);
+    const repositorio = await this._repositorioUsuario.guardar(usuario);
+    return repositorio;
   }
 }

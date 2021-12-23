@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { RepositorioUsuario } from 'src/dominio/usuario/puerto/repositorio/repositorio-usuario';
 import { Usuario } from 'src/dominio/usuario/modelo/usuario';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,8 +21,8 @@ export class RepositorioUsuarioPostgres implements RepositorioUsuario {
   }
 
   buscarUsuario(id: number): Promise<UsuarioDto> {
-    return this._daoUsuario.buscarUsuario(id)
-  }
+    return this._daoUsuario.buscarUsuario(id);
+  };
 
   async existeNombreUsuario(nombre: string): Promise<boolean> {
     return (await this.repositorio.count({ nombre })) > 0;
@@ -35,10 +36,8 @@ export class RepositorioUsuarioPostgres implements RepositorioUsuario {
     const userCreated = new UsuarioDto();
     userCreated.id = user.id;
     userCreated.nombre = user.nombre;
-    // eslint-disable-next-line @typescript-eslint/camelcase
     userCreated.created_at = user.created_at.toUTCString();
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    userCreated.updated_at = user.updated_at.toUTCString();
+    userCreated.created_at = user.updated_at.toUTCString();
     return userCreated;
   }
 }

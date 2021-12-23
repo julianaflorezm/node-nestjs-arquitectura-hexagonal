@@ -1,7 +1,7 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from "@nestjs/common";
-import { ComandoCrearCuenta } from "src/aplicacion/cuenta/comando/crear-cuenta.comando";
-import { ManejadorCrearCuenta } from "src/aplicacion/cuenta/comando/crear-cuenta.manejador";
-import { CuentaDto } from "src/aplicacion/cuenta/consulta/dto/cuenta.dto";
+import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ComandoCrearCuenta } from 'src/aplicacion/cuenta/comando/crear-cuenta.comando';
+import { ManejadorCrearCuenta } from 'src/aplicacion/cuenta/comando/crear-cuenta.manejador';
+import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
 
 @Controller('accounts')
 export class CuentaControlador {
@@ -12,6 +12,7 @@ export class CuentaControlador {
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   async crear(@Body() comandoCrearCuenta: ComandoCrearCuenta): Promise<CuentaDto> {
-    return await this._manejadorCrearCuenta.ejecutar(comandoCrearCuenta);
+    const manejador = await this._manejadorCrearCuenta.ejecutar(comandoCrearCuenta);
+    return manejador;
   }
 }

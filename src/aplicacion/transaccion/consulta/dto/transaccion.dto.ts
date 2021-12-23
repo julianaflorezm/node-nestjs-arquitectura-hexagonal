@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsInt } from "class-validator";
-import { CuentaDto } from "src/aplicacion/cuenta/consulta/dto/cuenta.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsInt } from 'class-validator';
+import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
 
 export class TransaccionDto {
     @IsInt()
@@ -29,5 +29,7 @@ export class TransaccionDto {
         this.createdAt = createdAt;
         this.origen = origen;
         this.destino = destino;
+        
     }
+
 }

@@ -7,7 +7,7 @@ export class Usuario {
 
   constructor(nombre: string, clave: string) {
     this.#nombre = nombre;
-    this.#clave = this.validarTamanoClave(clave);;
+    this.#clave = this.validarTamanoClave(clave);
   }
 
   private validarTamanoClave(clave: string) {
@@ -27,3 +27,4 @@ export class Usuario {
     return this.#clave;
   }
 }
+

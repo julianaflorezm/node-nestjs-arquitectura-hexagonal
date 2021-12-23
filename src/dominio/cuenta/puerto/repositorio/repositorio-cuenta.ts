@@ -1,5 +1,5 @@
-import { CuentaDto } from "src/aplicacion/cuenta/consulta/dto/cuenta.dto";
-import { Cuenta } from "../../modelo/cuenta";
+import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
+import { Cuenta } from '../../modelo/cuenta';
 
 export abstract class RepositorioCuenta  {
     abstract async crear(cuenta: Cuenta): Promise<CuentaDto>;

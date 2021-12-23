@@ -1,7 +1,7 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from "@nestjs/common";
-import { ComandoRealizarTransaccion } from "src/aplicacion/transaccion/comando/realizar-transaccion.comando";
-import { ManejadorRealizarTransaccion } from "src/aplicacion/transaccion/comando/realizar-transaccion.manejador";
-import { TransaccionDto } from "src/aplicacion/transaccion/consulta/dto/transaccion.dto";
+import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ComandoRealizarTransaccion } from 'src/aplicacion/transaccion/comando/realizar-transaccion.comando';
+import { ManejadorRealizarTransaccion } from 'src/aplicacion/transaccion/comando/realizar-transaccion.manejador';
+import { TransaccionDto } from 'src/aplicacion/transaccion/consulta/dto/transaccion.dto';
 
 @Controller('transactions')
 export class TransaccionControlador {
@@ -12,6 +12,7 @@ export class TransaccionControlador {
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
   async crear(@Body() comandoRealizarTransaccion: ComandoRealizarTransaccion): Promise<TransaccionDto> {
-    return await this._manejadorRealizarTransaccion.ejecutar(comandoRealizarTransaccion);
+    const manejador = await this._manejadorRealizarTransaccion.ejecutar(comandoRealizarTransaccion);
+    return manejador;
   }
 }

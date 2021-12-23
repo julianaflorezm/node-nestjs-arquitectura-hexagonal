@@ -1,6 +1,6 @@
-import { ErrorDeNegocio } from "src/dominio/errores/error-de-negocio";
-import { ErrorLongitudInvalida } from "src/dominio/errores/error-longitud-invalida";
-import { TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from "src/infraestructura/utilidades/constantes-comunes";
+import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
+import { ErrorLongitudInvalida } from 'src/dominio/errores/error-longitud-invalida';
+import { TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from 'src/infraestructura/utilidades/constantes-comunes';
 
 const NUMERO_DIGITOS_CUENTA = 6;
 

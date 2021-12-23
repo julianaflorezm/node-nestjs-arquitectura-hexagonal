@@ -1,9 +1,9 @@
-import { TransaccionDto } from "src/aplicacion/transaccion/consulta/dto/transaccion.dto";
-import { RepositorioCuenta } from "src/dominio/cuenta/puerto/repositorio/repositorio-cuenta";
-import { ErrorDeNegocio } from "src/dominio/errores/error-de-negocio";
-import { TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from "src/infraestructura/utilidades/constantes-comunes";
-import { Transaccion } from "../modelo/transaccion";
-import { RepositorioTransaccion } from "../puerto/repositorio/repositorio-transaccion";
+import { TransaccionDto } from 'src/aplicacion/transaccion/consulta/dto/transaccion.dto';
+import { RepositorioCuenta } from 'src/dominio/cuenta/puerto/repositorio/repositorio-cuenta';
+import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
+import { TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from 'src/infraestructura/utilidades/constantes-comunes';
+import { Transaccion } from '../modelo/transaccion';
+import { RepositorioTransaccion } from '../puerto/repositorio/repositorio-transaccion';
 
 export class ServicioRealizarTransaccion {
 
@@ -34,4 +34,5 @@ export class ServicioRealizarTransaccion {
       return response;
     }
   }
+  
   

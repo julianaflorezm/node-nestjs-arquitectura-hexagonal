@@ -7,10 +7,9 @@ export class ServicioBuscarUsuario {
   }
   async ejecutar(id: number): Promise<UsuarioDto>{
     if (!await this._repositorioUsuario.existeUsuario(id)) {
-        throw new ErrorDeNegocio(
-          `El usuario no existe`,
-        );
+        throw new ErrorDeNegocio(`El usuario no existe`);
     }
-    return await this._repositorioUsuario.buscarUsuario(id);
+    const repositorio = await this._repositorioUsuario.buscarUsuario(id);
+    return repositorio;
   }
 }

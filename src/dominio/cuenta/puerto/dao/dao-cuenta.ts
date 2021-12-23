@@ -1,2 +1,1 @@
-export abstract class DaoCuenta {
-}
+export abstract class DaoCuenta {}

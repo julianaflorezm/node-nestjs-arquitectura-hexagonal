@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { InjectEntityManager } from "@nestjs/typeorm";
-import { DaoCuenta } from "src/dominio/cuenta/puerto/dao/dao-cuenta";
-import { EntityManager } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { DaoCuenta } from 'src/dominio/cuenta/puerto/dao/dao-cuenta';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class DaoCuentaPostgres implements DaoCuenta {
@@ -9,5 +9,4 @@ export class DaoCuentaPostgres implements DaoCuenta {
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
   ) {}
-
 }
