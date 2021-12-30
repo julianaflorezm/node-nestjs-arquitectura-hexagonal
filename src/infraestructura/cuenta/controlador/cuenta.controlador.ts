@@ -3,7 +3,7 @@ import { ComandoCrearCuenta } from 'src/aplicacion/cuenta/comando/crear-cuenta.c
 import { ManejadorCrearCuenta } from 'src/aplicacion/cuenta/comando/crear-cuenta.manejador';
 import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
 
-@Controller('accounts')
+@Controller('cuentas')
 export class CuentaControlador {
   constructor(
     private readonly _manejadorCrearCuenta: ManejadorCrearCuenta,

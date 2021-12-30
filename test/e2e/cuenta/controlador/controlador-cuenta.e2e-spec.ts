@@ -27,7 +27,7 @@ import * as request from 'supertest';
     * No Inyectar los módulos completos (Se trae TypeORM y genera lentitud al levantar la prueba, traer una por una las dependencias)
     **/
    beforeAll(async () => {
-     repositorioUsuario = createStubObj<RepositorioUsuario>(['existeUsuario'], sinonSandbox);
+     repositorioUsuario = createStubObj<RepositorioUsuario>(['existeUsuario', 'buscar'], sinonSandbox);
      repositorioCuenta = createStubObj<RepositorioCuenta>(['crear'], sinonSandbox);
      const moduleRef = await Test.createTestingModule({
        controllers: [CuentaControlador],
@@ -59,21 +59,6 @@ import * as request from 'supertest';
      await app.close();
    });
  
- 
-   it('debería fallar al crear una cuenta con un saldo inicial menor a lo requerido', async () => {
-     const cuenta: ComandoCrearCuenta = {
-       saldo: 1000,
-       usuarioId: 1,
-     };
-     const mensaje = 'El saldo inicial debe ser no menor a 50000';
- 
-     const response = await request(app.getHttpServer())
-       .post('/accounts').send(cuenta)
-       .expect(HttpStatus.BAD_REQUEST);
-     expect(response.body.message).toBe(mensaje);
-     expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
-   });
- 
    it('debería fallar al crear una cuenta de un usuario no existente', async () => {
       const cuenta: ComandoCrearCuenta = {
         saldo: 100000,
@@ -84,7 +69,7 @@ import * as request from 'supertest';
      repositorioUsuario.existeUsuario.returns(Promise.resolve(false));
  
      const response = await request(app.getHttpServer())
-       .post('/accounts').send(cuenta)
+       .post('/cuentas').send(cuenta)
        .expect(HttpStatus.BAD_REQUEST);
  
      expect(response.body.message).toBe(mensaje);
@@ -96,19 +81,32 @@ import * as request from 'supertest';
         saldo: 100000,
         usuarioId: 1,
       };
-    //  const cuentaCreado: any = {
-    //     id: 8,
-    //     nombre: "Cuenta de ahorros",
-    //     numeroCuenta: 430630,
-    //     createdAt: "Tue, 21 Dec 2021 07:52:14 GMT",
-    //     usuarioId: 1
-    // }
+
      repositorioUsuario.existeUsuario.returns(Promise.resolve(true));
  
+
      return await request(app.getHttpServer())
-       .post('/accounts').send(cuenta)
+       .post('/cuentas').send(cuenta)
        .expect(HttpStatus.CREATED);
    });
+   
+   it('debería fallar al crear una cuenta con un saldo inicial menor a lo requerido', async () => {
+     const cuenta: ComandoCrearCuenta = {
+       saldo: 1000,
+       usuarioId: 1,
+     };
+     repositorioUsuario.existeUsuario.returns(Promise.resolve(true));
+ 
+     const mensaje = 'El saldo inicial debe ser no menor a 50000';
+ 
+     const response = await request(app.getHttpServer())
+       .post('/cuentas').send(cuenta)
+       .expect(HttpStatus.BAD_REQUEST);
+     expect(response.body.message).toBe(mensaje);
+     expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+   });
+ 
+ 
  
 
  });

@@ -11,7 +11,6 @@ describe('ServicioRegistrarUsuario', () => {
   let repositorioUsuarioStub: SinonStubbedInstance<RepositorioUsuario>;
 
   beforeEach(() => {
-
     repositorioUsuarioStub = createStubObj<RepositorioUsuario>(['existeNombreUsuario', 'guardar']);
     servicioRegistrarUsuario = new ServicioRegistrarUsuario(repositorioUsuarioStub);
   });

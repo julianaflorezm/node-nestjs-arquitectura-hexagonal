@@ -1,6 +1,6 @@
 import { Usuario } from 'src/dominio/usuario/modelo/usuario';
 import { ErrorLongitudInvalida } from 'src/dominio/errores/error-longitud-invalida';
-
+import crypto = require('crypto-js');
 describe('Usuario', () => {
 
   const _Usuario = Usuario as any;
@@ -14,7 +14,11 @@ describe('Usuario', () => {
   it('usuario con clave igual a 4 dígitos debería crear bien', () => {
     const usuario = new _Usuario('juan', '4123');
 
+    const bytes  = crypto.AES.decrypt(usuario.clave, 'secret');
+    const clave = bytes.toString(crypto.enc.Utf8);
+ 
+
     expect(usuario.nombre).toEqual('juan');
-    expect(usuario.clave).toEqual('4123');
+    expect(clave).toEqual('4123');
   });
 });

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsString } from 'class-validator';
+import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 
 export class CuentaDto {
   @IsInt()
@@ -20,5 +21,5 @@ export class CuentaDto {
   updatedAt: string;
 
   @ApiProperty({ example: 1 })
-  usuarioId: number;
+  usuario: UsuarioDto;
 }

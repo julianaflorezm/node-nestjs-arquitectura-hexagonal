@@ -1,55 +1,55 @@
+import { CuentaCreada } from "src/dominio/cuenta/modelo/cuenta-creada";
 import { ErrorDeNegocio } from "src/dominio/errores/error-de-negocio";
-import { ErrorLongitudInvalida } from "src/dominio/errores/error-longitud-invalida";
 import { Transaccion } from "src/dominio/transaccion/modelo/transaccion";
 
 describe('Transaccion', () => {
 
     const _Transaccion = Transaccion as any;
   
-    it('si el valor de la transaccion es igual a cero debería retornar error', () => {
-      return expect(async () => new _Transaccion(0, 123456, 678900))
+    it('si el valor de la transaccion de cuenta origen es igual a cero debería retornar error', () => {
+      return expect(async () => new _Transaccion(0, true, {}))
         .rejects
         .toStrictEqual(new ErrorDeNegocio(`El valor de la transacción debe ser mayor a cero.`));
     });
   
-    it('si el valor de la transaccion es menor a cero debería retornar error', () => {
-        return expect(async () => new _Transaccion(-1000, 123456, 678900))
-          .rejects
-          .toStrictEqual(new ErrorDeNegocio(`El valor de la transacción debe ser mayor a cero.`));
-      });
-
-    it('transaccion con valor mayor a 0 debería crearla bien', () => {
-      const transaccion = new _Transaccion(1000, 123456, 678900);
-  
-      expect(transaccion.valor).toEqual(1000);
-      expect(transaccion.cuentaOrigen).toEqual(123456);
-      expect(transaccion.cuentaDestino).toEqual(678900);
-
-    });
-
-    it('transacción con número de cuenta de origen sin 6 dígitos debería retornar error', () => { 
-        return expect(async () => new _Transaccion(1000, 12345, 678900))
-          .rejects
-          .toStrictEqual(new ErrorLongitudInvalida(`El número de la cuenta origen debe tener 6 dígitos.`));
-      });
-
-    it('transacción con número de cuenta de destino sin 6 dígitos debería retornar error', () => {
-        return expect(async () => new _Transaccion(1000, 123456, 67890))
-          .rejects
-          .toStrictEqual(new ErrorLongitudInvalida(`El número de la cuenta destino debe tener 6 dígitos.`));
-    });
-
-    it('transacción con número de cuenta de origen igual a cuenta destino debería retornar error', () => {
-      return expect(async () => new _Transaccion(1000, 123456, 123456))
+    it('si el valor de la transaccion de cuenta origen es menor a cero debería retornar error', () => {
+      return expect(async () => new _Transaccion(-1000,  true, {}))
         .rejects
-        .toStrictEqual(new ErrorDeNegocio(`La cuenta origen y la cuenta destino no deben ser iguales`));
-  });
-    
-    it('transacción con número de cuenta de origen y de destino con 6 dígitos debería crearla bien', () => {
-        const transaccion = new _Transaccion(1000, 123456, 678900);
-  
-        expect(transaccion.valor).toEqual(1000);
-        expect(transaccion.cuentaOrigen).toEqual(123456);
-        expect(transaccion.cuentaDestino).toEqual(678900);
+        .toStrictEqual(new ErrorDeNegocio(`El valor de la transacción debe ser mayor a cero.`));
     });
+
+    it('transaccion de cuenta origen con valor + costo mayor a su saldo debería generar error', () => {
+      const _Cuenta = CuentaCreada as any;
+      const cuenta = new _Cuenta(
+        1,
+        'Cuenta de ahorros',
+        33333333,
+        50000,
+        {},
+        new Date(),
+        new Date()
+      );
+      return expect(async () => new _Transaccion(100000,  true, cuenta))
+      .rejects
+      .toStrictEqual(new ErrorDeNegocio(`No tienes fondos suficientes para realizar la transacción.`));
+    });
+
+    it('transaccion de cuenta origen con valor mayor a 0 y valor + costo menor o igual a su saldo, debería crearla bien', () => {
+      const _Cuenta = CuentaCreada as any;
+      const cuenta = new _Cuenta(
+        1,
+        'Cuenta de ahorros',
+        33333333,
+        50000,
+        {},
+        new Date(),
+        new Date()
+      );
+      const transaccion = new _Transaccion(1000, true, cuenta);
+      expect(transaccion.valor).toEqual(-1000);
+      expect(transaccion.esCuentaOrigen).toEqual(true);
+      expect(transaccion.costo).toEqual(1000 || 1200);
+      expect(transaccion.cuenta.id).toEqual(1);
+    });
+
   });

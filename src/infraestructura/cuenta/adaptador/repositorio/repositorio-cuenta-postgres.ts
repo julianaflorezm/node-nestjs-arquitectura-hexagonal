@@ -1,31 +1,33 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
 import { Cuenta } from 'src/dominio/cuenta/modelo/cuenta';
 import { RepositorioCuenta } from 'src/dominio/cuenta/puerto/repositorio/repositorio-cuenta';
-import { UsuarioEntidad } from 'src/infraestructura/usuario/entidad/usuario.entidad';
 import { Repository } from 'typeorm';
 import { CuentaEntidad } from '../../entidad/cuenta.entidad';
-import { randomFixedInteger } from '../../../utilidades/funciones-utiles';
-import { CANTIDAD_DIGITOS_NUMERO_CUENTA, TRANSACCION_ORIGEN } from 'src/infraestructura/utilidades/constantes-comunes';
+import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
+import { CuentaCreada } from 'src/dominio/cuenta/modelo/cuenta-creada';
+import { UsuarioCreado } from 'src/dominio/usuario/modelo/usuario-creado';
 
 @Injectable()
 export class RepositorioCuentaPostgres implements RepositorioCuenta {
   constructor(
     @InjectRepository(CuentaEntidad)
-    private readonly repositorioCuenta: Repository<CuentaEntidad>,
-    @InjectRepository(UsuarioEntidad)
-    private readonly repositorioUsuario: Repository<UsuarioEntidad>
+    private readonly repositorioCuenta: Repository<CuentaEntidad>
   ) {}
+  
+  async buscar(numeroCuenta: number): Promise<CuentaCreada> {
+    const cuenta = await this.repositorioCuenta.findOne({ where: { numeroCuenta }, relations: ['usuario'] });
+    const usuarioEntidad = cuenta.usuario;
+    const usuario = new UsuarioCreado(usuarioEntidad.id, usuarioEntidad.nombre, usuarioEntidad.clave, usuarioEntidad.created_at, usuarioEntidad.updated_at);
+    return new CuentaCreada(cuenta.id, cuenta.nombre, cuenta.numeroCuenta, cuenta.saldo, usuario, cuenta.createdAt, cuenta.updatedAt);
+  }
 
-  async actualizarSaldo(tipo: string, numeroCuenta: number, valor: number, costo: number) {
-    const cuenta = await this.repositorioCuenta.findOne({ where: { numeroCuenta } });
-    if(tipo === TRANSACCION_ORIGEN) {
-      cuenta.saldo = cuenta.saldo - (valor + costo);
-    } else {
-      cuenta.saldo = cuenta.saldo + valor;
-    }
-    await this.repositorioCuenta.save(cuenta);
+  async actualizarSaldo(cuenta: CuentaCreada) {
+    const cuentaEntidad = this.repositorioCuenta.create(cuenta);
+    this.repositorioCuenta.merge(cuentaEntidad);
+    await this.repositorioCuenta.save(cuentaEntidad);
   }
   
   async tieneFondos(numeroCuenta: number, valor: number): Promise<boolean> {
@@ -37,19 +39,18 @@ export class RepositorioCuentaPostgres implements RepositorioCuenta {
   }
 
     async crear(cuenta: Cuenta): Promise<CuentaDto> {
-        const cuentaEntidad = new CuentaEntidad();
-        cuentaEntidad.numeroCuenta = randomFixedInteger(CANTIDAD_DIGITOS_NUMERO_CUENTA);
-        cuentaEntidad.saldo = cuenta.saldo;
-        const usuarioEntidad = await this.repositorioUsuario.findOne(cuenta.usuarioId);
-        cuentaEntidad.usuario = usuarioEntidad;
+        const cuentaEntidad = this.repositorioCuenta.create(cuenta);
         const cuentaCreada = await this.repositorioCuenta.save(cuentaEntidad);
         const cuentaDto = new CuentaDto();
         cuentaDto.id = cuentaCreada.id;
         cuentaDto.nombre = cuentaCreada.nombre;
         cuentaDto.numeroCuenta = cuentaCreada.numeroCuenta;
         cuentaDto.createdAt = cuentaCreada.createdAt.toUTCString();
-        cuentaDto.createdAt = cuentaCreada.createdAt.toUTCString();
-        cuentaDto.usuarioId = cuentaCreada.usuario.id;
+        cuentaDto.updatedAt = cuentaCreada.updatedAt.toUTCString();
+        const usuario = new UsuarioDto();
+        usuario.id = cuentaCreada.usuario.id;
+        usuario.nombre = cuentaCreada.usuario.nombre;
+        cuentaDto.usuario = usuario;
         return cuentaDto;
     }
 

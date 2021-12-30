@@ -33,7 +33,7 @@ describe('Pruebas al controlador de usuarios', () => {
    * No Inyectar los módulos completos (Se trae TypeORM y genera lentitud al levantar la prueba, traer una por una las dependencias)
    **/
   beforeAll(async () => {
-    repositorioUsuario = createStubObj<RepositorioUsuario>(['existeNombreUsuario', 'guardar', 'existeUsuario', 'buscarUsuario'], sinonSandbox);
+    repositorioUsuario = createStubObj<RepositorioUsuario>(['existeNombreUsuario', 'guardar', 'existeUsuario', 'buscarUsuario', 'buscar'], sinonSandbox);
     daoUsuario = createStubObj<DaoUsuario>(['listar'], sinonSandbox);
     const moduleRef = await Test.createTestingModule({
       controllers: [UsuarioControlador],
@@ -78,7 +78,7 @@ describe('Pruebas al controlador de usuarios', () => {
     daoUsuario.listar.returns(Promise.resolve(usuarios));
     
     return request(app.getHttpServer())
-      .get('/users/all')
+      .get('/usuarios/all')
       .expect(HttpStatus.OK)
       .expect(usuarios);
   });
@@ -91,7 +91,7 @@ describe('Pruebas al controlador de usuarios', () => {
     const mensaje = 'El tamaño mínimo de la clave debe ser 4';
 
     const response = await request(app.getHttpServer())
-      .post('/users').send(usuario)
+      .post('/usuarios').send(usuario)
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.message).toBe(mensaje);
     expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
@@ -106,7 +106,7 @@ describe('Pruebas al controlador de usuarios', () => {
     repositorioUsuario.existeNombreUsuario.returns(Promise.resolve(true));
 
     const response = await request(app.getHttpServer())
-      .post('/users').send(usuario)
+      .post('/usuarios').send(usuario)
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body.message).toBe(mensaje);
@@ -122,7 +122,7 @@ describe('Pruebas al controlador de usuarios', () => {
     repositorioUsuario.existeNombreUsuario.returns(Promise.resolve(false));
 
     return await request(app.getHttpServer())
-      .post('/users').send(usuario)
+      .post('/usuarios').send(usuario)
       .expect(HttpStatus.CREATED);
   });
 
@@ -133,7 +133,7 @@ describe('Pruebas al controlador de usuarios', () => {
     repositorioUsuario.existeUsuario.returns(Promise.resolve(false));
 
     const response = await request(app.getHttpServer())
-      .get('/users/' + id).send()
+      .get('/usuarios/' + id).send()
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body.message).toBe(mensaje);
@@ -146,7 +146,7 @@ describe('Pruebas al controlador de usuarios', () => {
     repositorioUsuario.existeUsuario.returns(Promise.resolve(true));
 
     return request(app.getHttpServer())
-      .get('/users/' + id)
+      .get('/usuarios/' + id)
       .expect(HttpStatus.OK);
 
   });

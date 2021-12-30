@@ -12,9 +12,9 @@ import { ServicioRealizarTransaccion } from 'src/dominio/transaccion/servicio/se
 import { servicioRealizarTransaccionProveedor } from 'src/infraestructura/transaccion/proveedor/servicio/servicio-realizar-transaccion.proveedor';
 import { ManejadorRealizarTransaccion } from 'src/aplicacion/transaccion/comando/realizar-transaccion.manejador';
 import { ComandoRealizarTransaccion } from 'src/aplicacion/transaccion/comando/realizar-transaccion.comando';
-import { TransaccionDto } from 'src/aplicacion/transaccion/consulta/dto/transaccion.dto';
-import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
-import { TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from 'src/infraestructura/utilidades/constantes-comunes';
+import { CuentaCreada } from 'src/dominio/cuenta/modelo/cuenta-creada';
+import { UsuarioCreado } from 'src/dominio/usuario/modelo/usuario-creado';
+import { TransaccionCreada } from 'src/dominio/transaccion/modelo/transaccion-creada';
 /**
  * Un sandbox es util cuando el módulo de nest se configura una sola vez durante el ciclo completo de pruebas
  * */
@@ -31,7 +31,7 @@ import { TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from 'src/infraestructura/uti
     **/
    beforeAll(async () => {
      repositorioTransaccion = createStubObj<RepositorioTransaccion>(['realizarTransaccion'], sinonSandbox);
-     repositorioCuenta = createStubObj<RepositorioCuenta>(['actualizarSaldo', 'existeNumeroCuenta', 'tieneFondos'], sinonSandbox);
+     repositorioCuenta = createStubObj<RepositorioCuenta>(['actualizarSaldo', 'existeNumeroCuenta', 'tieneFondos', 'buscar'], sinonSandbox);
      const moduleRef = await Test.createTestingModule({
        controllers: [TransaccionControlador],
        providers: [
@@ -61,135 +61,144 @@ import { TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from 'src/infraestructura/uti
    afterAll(async () => {
      await app.close();
    });
+
  
- 
-   it('debería fallar al realizar una transaccion de un valor menor a lo requerido', async () => {
-     const cuenta: ComandoRealizarTransaccion = {
-       valor: -1000,
-       cuentaOrigen: 123456,
-       cuentaDestino: 678909
-     };
-     const mensaje = `El valor de la transacción debe ser mayor a cero.`;
- 
-     const response = await request(app.getHttpServer())
-       .post('/transactions').send(cuenta)
-       .expect(HttpStatus.BAD_REQUEST);
-     expect(response.body.message).toBe(mensaje);
-     expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
-   });
-
-   it('debería fallar al realizar una transaccion con numero de cuenta origen invalido', async () => {
-    const cuenta: ComandoRealizarTransaccion = {
-      valor: 1000,
-      cuentaOrigen: 12345,
-      cuentaDestino: 678909
-    };
-    const mensaje = `El número de la cuenta origen debe tener 6 dígitos.`;
-
-    const response = await request(app.getHttpServer())
-      .post('/transactions').send(cuenta)
-      .expect(HttpStatus.BAD_REQUEST);
-    expect(response.body.message).toBe(mensaje);
-    expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  });
-
-  it('debería fallar al realizar una transaccion con numero de cuenta destino invalido', async () => {
-    const cuenta: ComandoRealizarTransaccion = {
-      valor: 1000,
-      cuentaOrigen: 123456,
-      cuentaDestino: 67890
-    };
-    const mensaje = `El número de la cuenta destino debe tener 6 dígitos.`;
-
-    const response = await request(app.getHttpServer())
-      .post('/transactions').send(cuenta)
-      .expect(HttpStatus.BAD_REQUEST);
-    expect(response.body.message).toBe(mensaje);
-    expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  });
-
-  it('debería fallar al realizar una transaccion con número de cuenta origen igual a la de destino', async () => {
-    const cuenta: ComandoRealizarTransaccion = {
-      valor: 1000,
-      cuentaOrigen: 123456,
-      cuentaDestino: 123456
-    };
-    const mensaje = `La cuenta origen y la cuenta destino no deben ser iguales`;
-
-    const response = await request(app.getHttpServer())
-      .post('/transactions').send(cuenta)
-      .expect(HttpStatus.BAD_REQUEST);
-    expect(response.body.message).toBe(mensaje);
-    expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
-  });
-
   it('debería fallar al realizar una transaccion con número de cuentas inexistentes', async () => {
-    const cuenta: ComandoRealizarTransaccion = {
+    const comando: ComandoRealizarTransaccion = {
       valor: 1000,
-      cuentaOrigen: 123456,
-      cuentaDestino: 678900
+      cuentaOrigen: 12345678,
+      cuentaDestino: 12345678
     };
 
     repositorioCuenta.existeNumeroCuenta.returns(Promise.resolve(false));
     const mensaje =  `La cuenta origen no existe.` || `La cuenta destino no existe.`;
 
     const response = await request(app.getHttpServer())
-      .post('/transactions').send(cuenta)
+      .post('/transacciones').send(comando)
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.message).toBe(mensaje);
     expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
   });
 
-  it('debería fallar al realizar una transaccion con fondos insuficientes', async () => {
-    const cuenta: ComandoRealizarTransaccion = {
-      valor: 1000,
-      cuentaOrigen: 123456,
-      cuentaDestino: 678900
+  it('debería fallar al realizar una transaccion con un valor igual a cero', async () => {
+    const comando: ComandoRealizarTransaccion = {
+      valor: 0,
+      cuentaOrigen: 12345678,
+      cuentaDestino: 12345679
     };
 
+    const usuario = new UsuarioCreado(1, 'camila', 'xxxx', new Date(), new Date());
+    const cuentaOrg = new CuentaCreada(1, 'Cuenta de ahorros', 12345678, 10000, usuario, new Date(), new Date());
+    const cuentaDes = new CuentaCreada(2, 'Cuenta de ahorros', 12345679, 100000, usuario, new Date(), new Date());
+    
     repositorioCuenta.existeNumeroCuenta.returns(Promise.resolve(true));
-    repositorioCuenta.tieneFondos.returns(Promise.resolve(false));
-    const mensaje =  `No tienes fondos suficientes para hacer esta transacción.`;
+    repositorioCuenta.buscar.returns(Promise.resolve(cuentaOrg));
+    repositorioCuenta.buscar.returns(Promise.resolve(cuentaDes));
+
+    const mensaje = `El valor de la transacción debe ser mayor a cero.`;
 
     const response = await request(app.getHttpServer())
-      .post('/transactions').send(cuenta)
+      .post('/transacciones').send(comando)
       .expect(HttpStatus.BAD_REQUEST);
     expect(response.body.message).toBe(mensaje);
     expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
   });
+
+  it('debería fallar al realizar una transaccion con un valor menor a cero', async () => {
+    const comando: ComandoRealizarTransaccion = {
+      valor: -1000,
+      cuentaOrigen: 12345678,
+      cuentaDestino: 12345679
+    };
+
+    const usuario = new UsuarioCreado(1, 'camila', 'xxxx', new Date(), new Date());
+    const cuentaOrg = new CuentaCreada(1, 'Cuenta de ahorros', 12345678, 10000, usuario, new Date(), new Date());
+    const cuentaDes = new CuentaCreada(2, 'Cuenta de ahorros', 12345679, 100000, usuario, new Date(), new Date());
+    
+    repositorioCuenta.existeNumeroCuenta.returns(Promise.resolve(true));
+    repositorioCuenta.buscar.returns(Promise.resolve(cuentaOrg));
+    repositorioCuenta.buscar.returns(Promise.resolve(cuentaDes));
+
+    const mensaje = `El valor de la transacción debe ser mayor a cero.`;
+
+    const response = await request(app.getHttpServer())
+      .post('/transacciones').send(comando)
+      .expect(HttpStatus.BAD_REQUEST);
+    expect(response.body.message).toBe(mensaje);
+    expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+  });
+
+  // it('debería fallar al realizar una transaccion con un valor + costo mayor a sus fondos', async () => {
+  //   const comando: ComandoRealizarTransaccion = {
+  //     valor: 5000,
+  //     cuentaOrigen: 12345612,
+  //     cuentaDestino: 12345613
+  //   };
+
+  //   const usuario = new UsuarioCreado(1, 'camila', 'xxxx', new Date(), new Date());
+  //   const cuentaOrg = new CuentaCreada(1, 'Cuenta de ahorros', 12345612, 1000, usuario, new Date(), new Date());
+  //   const cuentaDes = new CuentaCreada(2, 'Cuenta de ahorros', 12345613, 100000, usuario, new Date(), new Date());
+
+  //   repositorioCuenta.existeNumeroCuenta.returns(Promise.resolve(true));
+  //   repositorioCuenta.buscar.returns(Promise.resolve(cuentaOrg));
+  //   repositorioCuenta.buscar.returns(Promise.resolve(cuentaDes));
+
+  //   const origen: Transaccion = {
+  //     valor: 5000,
+  //     esCuentaOrigen: true,
+  //     cuenta: cuentaOrg
+  //   };
+  //   const mensaje = `No tienes fondos suficientes para realizar la transacción.`;
+ 
+  //    const response = await request(app.getHttpServer())
+  //      .post('/transacciones').send(comando)
+  //      .expect(HttpStatus.BAD_REQUEST);
+  //    expect(response.body.message).toBe(mensaje);
+  //    expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+  // });
  
    it('debería realizar una transaccion con una cuenta existente y con fondos suficientes', async () => {
-    const cuenta: ComandoRealizarTransaccion = {
-      valor: 1000,
-      cuentaOrigen: 123456,
-      cuentaDestino: 678900
+    const comando: ComandoRealizarTransaccion = {
+      valor: 5000,
+      cuentaOrigen: 12345612,
+      cuentaDestino: 12345613
     };
 
-    const origen = new CuentaDto();
-        origen.id = 1;
-        origen.nombre = 'Cuenta de ahorros';
-        origen.numeroCuenta = 123456;
-    const destino = new CuentaDto();
-        destino.id = 2;
-        destino.nombre =  'Cuenta de ahorros';
-        destino.numeroCuenta = 678900;
+    const usuario = new UsuarioCreado(1, 'camila', 'xxxx', new Date(), new Date());
+    const cuentaOrg = new CuentaCreada(1, 'Cuenta de ahorros', 12345612, 100000, usuario, new Date(), new Date());
+    const cuentaDes = new CuentaCreada(2, 'Cuenta de ahorros', 12345613, 1000000, usuario, new Date(), new Date());
 
-    const transaccionDto: TransaccionDto = {
-      id: 1,
-      valor: 1000,
-      costo: 1000,
-      createdAt: '2021/01/02 13:00:00',
-      origen,
-      destino
-    };
+  const transCreadaOrg = new TransaccionCreada(
+    1,
+    -5000,
+    1000,
+    true,
+    cuentaOrg,
+    new Date(),
+    new Date()
+  );
+
+  const transCreadaDes = new TransaccionCreada(
+      2,
+      5000,
+      0,
+      false,
+      cuentaDes,
+      new Date(),
+      new Date()
+    );
     repositorioCuenta.existeNumeroCuenta.returns(Promise.resolve(true));
-    repositorioCuenta.tieneFondos.returns(Promise.resolve(true));
-    repositorioTransaccion.realizarTransaccion.returns(Promise.resolve(transaccionDto));
-    repositorioCuenta.actualizarSaldo.withArgs(TRANSACCION_ORIGEN, transaccionDto.origen.numeroCuenta, transaccionDto.valor, transaccionDto.costo).resolves();
-    repositorioCuenta.actualizarSaldo.withArgs(TRANSACCION_DESTINO, transaccionDto.destino.numeroCuenta, transaccionDto.valor, transaccionDto.costo).resolves();
+    repositorioCuenta.buscar.returns(Promise.resolve(cuentaOrg));
+    repositorioCuenta.buscar.returns(Promise.resolve(cuentaDes));
+
+    repositorioTransaccion.realizarTransaccion.returns(Promise.resolve(transCreadaOrg));
+    repositorioTransaccion.realizarTransaccion.returns(Promise.resolve(transCreadaDes));
+
+    repositorioCuenta.actualizarSaldo.withArgs(cuentaOrg).resolves();
+    repositorioCuenta.actualizarSaldo.withArgs(cuentaDes).resolves();
 
      return await request(app.getHttpServer())
-       .post('/transactions').send(cuenta)
+       .post('/transacciones').send(comando)
        .expect(HttpStatus.CREATED);
    });
  

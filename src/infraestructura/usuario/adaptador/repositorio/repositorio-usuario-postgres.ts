@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 import { DaoUsuario } from 'src/dominio/usuario/puerto/dao/dao-usuario';
+import { UsuarioCreado } from 'src/dominio/usuario/modelo/usuario-creado';
 
 @Injectable()
 export class RepositorioUsuarioPostgres implements RepositorioUsuario {
@@ -15,6 +16,11 @@ export class RepositorioUsuarioPostgres implements RepositorioUsuario {
     private readonly repositorio: Repository<UsuarioEntidad>,
     private _daoUsuario: DaoUsuario,
   ) {}
+  
+  async buscar(id: number): Promise<UsuarioCreado> {
+    const usuario = await this.repositorio.findOne(id);
+    return new UsuarioCreado(usuario.id, usuario.nombre, usuario.clave, usuario.created_at, usuario.updated_at);
+  }
 
   async existeUsuario(id: number): Promise<boolean> {
     return (await this.repositorio.count({ id })) > 0;
@@ -37,7 +43,7 @@ export class RepositorioUsuarioPostgres implements RepositorioUsuario {
     userCreated.id = user.id;
     userCreated.nombre = user.nombre;
     userCreated.created_at = user.created_at.toUTCString();
-    userCreated.created_at = user.updated_at.toUTCString();
+    userCreated.updated_at = user.updated_at.toUTCString();
     return userCreated;
   }
 }

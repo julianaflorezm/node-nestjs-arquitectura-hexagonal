@@ -6,7 +6,7 @@ import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 import { ManejadorBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.manejador';
 import { ConsultaBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.consulta';
 
-@Controller('users')
+@Controller('usuarios')
 export class UsuarioControlador {
   constructor(
     private readonly _manejadorRegistrarUsuario: ManejadorRegistrarUsuario,

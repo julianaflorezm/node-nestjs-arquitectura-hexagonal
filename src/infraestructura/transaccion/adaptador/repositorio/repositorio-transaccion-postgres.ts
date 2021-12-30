@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
-import { TransaccionDto } from 'src/aplicacion/transaccion/consulta/dto/transaccion.dto';
+import { CuentaCreada } from 'src/dominio/cuenta/modelo/cuenta-creada';
 import { Transaccion } from 'src/dominio/transaccion/modelo/transaccion';
+import { TransaccionCreada } from 'src/dominio/transaccion/modelo/transaccion-creada';
 import { RepositorioTransaccion } from 'src/dominio/transaccion/puerto/repositorio/repositorio-transaccion';
+import { UsuarioCreado } from 'src/dominio/usuario/modelo/usuario-creado';
 import { CuentaEntidad } from 'src/infraestructura/cuenta/entidad/cuenta.entidad';
-import { COSTO_DIA_NO_HABIL_TRANSACCION, COSTO_HABITUAL_TRANSACCION, TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from 'src/infraestructura/utilidades/constantes-comunes';
-import { getDateFormat, isEnabledDay } from 'src/infraestructura/utilidades/funciones-utiles';
 import { Repository } from 'typeorm';
 import { TransaccionEntidad } from '../../entidad/transaccion.entidad';
 
@@ -20,48 +19,23 @@ export class RepositorioTransaccionPostgres implements RepositorioTransaccion {
   ) {}
 
 
-    async realizarTransaccion(transaccion: Transaccion): Promise<TransaccionDto> {
-        const transaccionOrigen = await this.crearTransaccion(TRANSACCION_ORIGEN, transaccion);
-        const trasaccionOrigenCreada = await this.repositorioTransaccion.save(transaccionOrigen);
-        const cuentaOrigen = trasaccionOrigenCreada.cuenta;
-        const transaccionDestino = await this.crearTransaccion(TRANSACCION_DESTINO, transaccion);
-        const trasaccionDestinoCreada = await this.repositorioTransaccion.save(transaccionDestino);
-        const cuentaDestino = trasaccionDestinoCreada.cuenta;
-        const origenDto = new CuentaDto();
-        origenDto.id = cuentaOrigen.id;
-        origenDto.nombre = cuentaOrigen.nombre;
-        origenDto.numeroCuenta = cuentaOrigen.numeroCuenta;
-        const destinoDto = new CuentaDto();
-        destinoDto.id = cuentaDestino.id;
-        destinoDto.nombre = cuentaDestino.nombre;
-        destinoDto.numeroCuenta = cuentaDestino.numeroCuenta;
-        return new TransaccionDto(
-          trasaccionOrigenCreada.id,
-          trasaccionDestinoCreada.valor,
-          trasaccionOrigenCreada.costo,
-          trasaccionOrigenCreada.createdAt.toISOString(),
-          origenDto,
-          destinoDto
+    async realizarTransaccion(transaccion: Transaccion): Promise<TransaccionCreada> {
+        const transaccionEntidad = this.repositorioTransaccion.create(transaccion);
+        const transaccionCreada = await this.repositorioTransaccion.save(transaccionEntidad);
+        const cuentaEntidad = transaccionCreada.cuenta;
+        const usuarioEntidad = cuentaEntidad.usuario;
+        const usuario = new UsuarioCreado(usuarioEntidad.id, usuarioEntidad.nombre, usuarioEntidad.clave, usuarioEntidad.created_at, usuarioEntidad.updated_at);
+        const cuenta = new CuentaCreada(cuentaEntidad.id, cuentaEntidad.nombre, cuentaEntidad.numeroCuenta, cuentaEntidad.saldo, usuario, cuentaEntidad.createdAt, cuentaEntidad.updatedAt);
+        return new TransaccionCreada(
+          transaccionCreada.id,
+          transaccionCreada.valor,
+          transaccionCreada.costo,
+          transaccionCreada.esCuentaOrigen,
+          cuenta,
+          transaccionCreada.createdAt,
+          transaccionCreada.updatedAt
         );
     }
 
-    async crearTransaccion(tipo: string, transaccion: Transaccion) {
-      const transaccionEntidad = new TransaccionEntidad();
-      const validacion = tipo === TRANSACCION_ORIGEN;
-      transaccionEntidad.valor = validacion ? -transaccion.valor : transaccion.valor;
-      const date = getDateFormat(new Date());
-      if(validacion && isEnabledDay(date)) {
-        transaccionEntidad.costo = COSTO_HABITUAL_TRANSACCION;
-      } else if(validacion && !isEnabledDay(date)) {
-        transaccionEntidad.costo = COSTO_DIA_NO_HABIL_TRANSACCION;
-      } else {
-        transaccionEntidad.costo = 0;
-      }
-      transaccionEntidad.cuenta = validacion ? await this.buscarCuenta(transaccion.cuentaOrigen) : await this.buscarCuenta(transaccion.cuentaDestino);
-      return transaccionEntidad;
-    }
 
-    async buscarCuenta(numeroCuenta: number): Promise<CuentaEntidad> {
-      return await this.repositorioCuenta.findOne( { numeroCuenta });
-    }
 }

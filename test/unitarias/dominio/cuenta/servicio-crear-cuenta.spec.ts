@@ -9,36 +9,25 @@ describe('ServicioCrearCuenta', () => {
 
     let servicioCrearCuenta: ServicioCrearCuenta;
     let repositorioCuentaStub: SinonStubbedInstance<RepositorioCuenta>;
-    let repositorioUsuarioStub: SinonStubbedInstance<RepositorioUsuario>;
   
     beforeEach(() => {
   
       repositorioCuentaStub = createStubObj<RepositorioCuenta>(['crear']);
-      repositorioUsuarioStub = createStubObj<RepositorioUsuario>(['existeUsuario']);
 
-      servicioCrearCuenta = new ServicioCrearCuenta(repositorioCuentaStub, repositorioUsuarioStub);
+      servicioCrearCuenta = new ServicioCrearCuenta(repositorioCuentaStub);
     });
   
-    it('si el usuario no existe deberia retonar error', async () => {
   
-        repositorioUsuarioStub.existeUsuario.returns(Promise.resolve(false));
-    
-        await expect(
-          servicioCrearCuenta.ejecutar(
-            new Cuenta(
-                300000,
-                1,
-              )
-          ),
-        ).rejects.toThrow(`El usuario no existe`);
-      });
-  
-      it('si el usuario existe crea una cuenta en el repositorio', async () => {
-        const cuenta = new Cuenta(
-            300000,
-            1,
-          );
-        repositorioUsuarioStub.existeUsuario.returns(Promise.resolve(true));
+      it('Debería crear una cuenta en el repositorio', async () => {
+        const _Cuenta = Cuenta as any;
+        const usuario = {
+          id: 1,
+          nombre: 'arturo',
+          clave: 'xxxx',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+        const cuenta = new _Cuenta(300000, usuario);
 
         await servicioCrearCuenta.ejecutar(cuenta);
     

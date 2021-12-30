@@ -12,6 +12,9 @@ export class TransaccionEntidad {
   @Column({ type: 'bigint' })
   costo: number;
 
+  @Column()
+  esCuentaOrigen: boolean;
+  
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   createdAt: Date;
 

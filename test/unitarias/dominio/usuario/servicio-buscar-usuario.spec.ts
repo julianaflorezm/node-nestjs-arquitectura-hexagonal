@@ -1,5 +1,4 @@
 import { SinonStubbedInstance } from "sinon";
-import { Usuario } from "src/dominio/usuario/modelo/usuario";
 import { RepositorioUsuario } from "src/dominio/usuario/puerto/repositorio/repositorio-usuario";
 import { ServicioBuscarUsuario } from "src/dominio/usuario/servicio/servicio-buscar-usuario";
 import { createStubObj } from "test/util/create-object.stub";

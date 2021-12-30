@@ -3,7 +3,7 @@ import { ComandoRealizarTransaccion } from 'src/aplicacion/transaccion/comando/r
 import { ManejadorRealizarTransaccion } from 'src/aplicacion/transaccion/comando/realizar-transaccion.manejador';
 import { TransaccionDto } from 'src/aplicacion/transaccion/consulta/dto/transaccion.dto';
 
-@Controller('transactions')
+@Controller('transacciones')
 export class TransaccionControlador {
   constructor(
     private readonly _manejadorRealizarTransaccion: ManejadorRealizarTransaccion,

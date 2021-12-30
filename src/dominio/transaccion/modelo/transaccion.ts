@@ -1,44 +1,93 @@
+import { CuentaCreada } from 'src/dominio/cuenta/modelo/cuenta-creada';
 import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
-import { ErrorLongitudInvalida } from 'src/dominio/errores/error-longitud-invalida';
-import { TRANSACCION_DESTINO, TRANSACCION_ORIGEN } from 'src/infraestructura/utilidades/constantes-comunes';
+import { esDiaHabil, generarFecha } from 'src/infraestructura/utilidades/funciones-utiles';
 
-const NUMERO_DIGITOS_CUENTA = 6;
+const FECHA_CREACION = generarFecha(new Date());
+const COSTO_HABITUAL_TRANSACCION = 1000;
+const PORCENTAJE = 0.20;
+const COSTO_DIA_NO_HABIL_TRANSACCION = COSTO_HABITUAL_TRANSACCION + (COSTO_HABITUAL_TRANSACCION * PORCENTAJE); // 20% more
 
 export class Transaccion {
-  public valor: number;
-  public cuentaOrigen: number;
-  public cuentaDestino: number;
+  readonly #valor: number;
+  readonly #costo: number;
+  readonly #esCuentaOrigen: boolean;
+  readonly #cuenta: CuentaCreada;
 
-  constructor(valor: number, cuentaOrigen: number, cuentaDestino: number) {
-    this.valor = this.validarValor(valor);
-    this.cuentaOrigen = this.validarNumeroDigitosCuenta(TRANSACCION_ORIGEN, cuentaOrigen);
-    this.cuentaDestino = this.validarNumeroDigitosCuenta(TRANSACCION_DESTINO, cuentaDestino);
-    this.validarIgualdad(cuentaOrigen, cuentaDestino);
+  constructor(valor: number, esCuentaOrigen: boolean, cuenta: CuentaCreada) {
+    this.validarValor(valor);
+    this.#valor = this.generarValor(valor, esCuentaOrigen);
+    this.#costo = this.generarCosto(esCuentaOrigen);
+    this.#esCuentaOrigen = esCuentaOrigen;
+    cuenta.actualizarSaldo(this.#valor, this.#costo);
+    this.#cuenta = cuenta;
+    this.validarFondos(valor);
   }
 
-  private validarNumeroDigitosCuenta(tipo: string, cuenta: number) {
-    if (cuenta.toString().length !== NUMERO_DIGITOS_CUENTA) {
-      throw new ErrorLongitudInvalida(
-        `El número de la ${tipo} debe tener ${NUMERO_DIGITOS_CUENTA} dígitos.`,
-      );
+  private validarFondos(valor) {
+    if(this.#esCuentaOrigen && this.#cuenta.saldo - (valor + this.#costo) < 0) {
+      throw new ErrorDeNegocio('No tienes fondos suficientes para realizar la transacción.');
     }
-    return cuenta;
   }
 
-  private validarValor(valor: number) {
-    if(valor <= 0) {
-      throw new ErrorDeNegocio(
-        `El valor de la transacción debe ser mayor a cero.`,
-      );
+  private generarValor(valor: number, esCuentaOrigen: boolean) {
+    if(esCuentaOrigen) {
+      return - valor;
     }
     return valor;
   }
 
-  private validarIgualdad(cuentaOrigen: number, cuentaDestino: number) {
-    if(cuentaOrigen === cuentaDestino) {
+  private generarCosto(esCuentaOrigen: boolean) {
+    if(!esCuentaOrigen) {
+      return 0;
+    }
+    if(esCuentaOrigen && esDiaHabil(FECHA_CREACION)) {
+      return COSTO_HABITUAL_TRANSACCION;
+    }
+    if(esCuentaOrigen && !esDiaHabil(FECHA_CREACION)) {
+      return COSTO_DIA_NO_HABIL_TRANSACCION;
+    }
+  }
+  
+  private validarValor(valor: number) {
+    if(valor <= 0) {
       throw new ErrorDeNegocio(
-        `La cuenta origen y la cuenta destino no deben ser iguales`,
+        `El valor de la transacción debe ser mayor a cero.`
       );
     }
   }
+
+  get valor(): number {
+    return this.#valor;
+  }
+
+  get costo(): number {
+    return this.#costo;
+  }
+
+  get esCuentaOrigen(): boolean {
+    return this.#esCuentaOrigen;
+  }
+
+  get cuenta(): CuentaCreada {
+    return this.#cuenta;
+  }
+
+  // private validarNumeroDigitosCuenta(tipo: string, cuenta: number) {
+  //   if (cuenta.toString().length !== NUMERO_DIGITOS_CUENTA) {
+  //     throw new ErrorLongitudInvalida(
+  //       `El número de la ${tipo} debe tener ${NUMERO_DIGITOS_CUENTA} dígitos.`,
+  //     );
+  //   }
+  //   return cuenta;
+  // }
+
+ 
+
+  // private validarIgualdad(cuentaOrigen: number, cuentaDestino: number) {
+  //   if(cuentaOrigen === cuentaDestino) {
+  //     throw new ErrorDeNegocio(
+  //       `La cuenta origen y la cuenta destino no deben ser iguales`,
+  //     );
+  //   }
+  // }
 }
