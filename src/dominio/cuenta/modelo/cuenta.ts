@@ -5,7 +5,6 @@ import { generarFecha, esDiaHabil } from 'src/infraestructura/utilidades/funcion
 const SALDO_MINIMO = 50000;
 const NOMBRE_CUENTA = 'Cuenta de ahorros';
 const CANTIDAD_CARACTERES_NUMERO_CUENTA = 8;
-const FECHA_CREACION = generarFecha(new Date());
 const HORARIO_CREACION_PERMITIDO = { INCIO: 8, FIN: 11 }
 
 export class Cuenta {
@@ -13,20 +12,22 @@ export class Cuenta {
   readonly #numeroCuenta: number;
   readonly #saldo: number;
   readonly #usuario: UsuarioCreado;
-
-  constructor(saldo: number, usuario: UsuarioCreado) {
-    this.puedeCrearCuenta();
+  readonly #createdAt: Date;
+  
+  constructor(saldo: number, usuario: UsuarioCreado, createdAt: Date) {
+    this.puedeCrearCuenta(createdAt);
     this.validarSaldoInicial(saldo);
     this.#nombre = this.generarNombre();
     this.#numeroCuenta = this.generarNumeroCuenta();
     this.#saldo = saldo;
     this.#usuario = usuario;
-    
+    this.#createdAt = createdAt;
   }
 
-  private puedeCrearCuenta() {
-    if(!esDiaHabil(FECHA_CREACION)) {
-      if(FECHA_CREACION.hour() < HORARIO_CREACION_PERMITIDO.INCIO || FECHA_CREACION.hour() > HORARIO_CREACION_PERMITIDO.FIN  ) {
+  private puedeCrearCuenta(createdAt: Date) {
+    const fechaCreacion = generarFecha(createdAt);
+    if(!esDiaHabil(fechaCreacion)) {
+      if(fechaCreacion.hour() < HORARIO_CREACION_PERMITIDO.INCIO || fechaCreacion.hour() > HORARIO_CREACION_PERMITIDO.FIN  ) {
         throw new ErrorDeNegocio(
           `El horario para crear una cuenta los días no hábiles es de 8:00 am a 12:00 am.`
         );
@@ -65,5 +66,9 @@ export class Cuenta {
 
   get usuario(): UsuarioCreado {
     return this.#usuario;
+  }
+
+  get createdAt(): Date {
+    return this.#createdAt;
   }
 }

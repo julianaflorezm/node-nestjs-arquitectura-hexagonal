@@ -1,3 +1,4 @@
+import { date } from '@hapi/joi';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ComandoRealizarTransaccion {
@@ -10,4 +11,7 @@ export class ComandoRealizarTransaccion {
 
   @ApiProperty({ example: 12344, required: true })
   public cuentaDestino: number;
+
+  @ApiProperty({ type: Date })
+  public createdAt: Date;
 }

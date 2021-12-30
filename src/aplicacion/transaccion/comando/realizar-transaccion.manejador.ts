@@ -28,12 +28,14 @@ export class ManejadorRealizarTransaccion {
       new Transaccion(
         comandoRealizarTransaccion.valor,
         true,
-        await this.repositorioCuenta.buscar(comandoRealizarTransaccion.cuentaOrigen)
+        await this.repositorioCuenta.buscar(comandoRealizarTransaccion.cuentaOrigen),
+        new Date(comandoRealizarTransaccion.createdAt)
       ),
       new Transaccion(
         comandoRealizarTransaccion.valor,
         false,
-        await this.repositorioCuenta.buscar(comandoRealizarTransaccion.cuentaDestino)
+        await this.repositorioCuenta.buscar(comandoRealizarTransaccion.cuentaDestino),
+        new Date(comandoRealizarTransaccion.createdAt)
       ),
     );
   }

@@ -8,4 +8,7 @@ export class ComandoCrearCuenta {
   @IsInt()
   @ApiProperty({ example: 12 })
   public usuarioId: number;
+
+  @ApiProperty({ type: Date })
+  public createdAt: string;
 }

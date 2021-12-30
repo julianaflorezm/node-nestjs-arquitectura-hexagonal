@@ -24,10 +24,10 @@ describe('ServicioCrearCuenta', () => {
           id: 1,
           nombre: 'arturo',
           clave: 'xxxx',
-          createdAt: new Date(),
-          updatedAt: new Date()
+          createdAt: new Date('2022-01-01 11:59:00'),
+          updatedAt: new Date('2022-01-01 11:59:00')
         }
-        const cuenta = new _Cuenta(300000, usuario);
+        const cuenta = new _Cuenta(300000, usuario, new Date('2022-01-01 11:59:00'));
 
         await servicioCrearCuenta.ejecutar(cuenta);
     

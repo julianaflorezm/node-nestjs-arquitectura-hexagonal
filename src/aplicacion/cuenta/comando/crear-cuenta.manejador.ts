@@ -22,6 +22,7 @@ export class ManejadorCrearCuenta {
       new Cuenta(
         comandoCrearCuenta.saldo,
         await this.usuarioRepositorio.buscar(comandoCrearCuenta.usuarioId),
+        new Date(comandoCrearCuenta.createdAt)
       )
     );
   }

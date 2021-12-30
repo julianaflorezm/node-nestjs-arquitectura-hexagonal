@@ -2,7 +2,6 @@ import { CuentaCreada } from 'src/dominio/cuenta/modelo/cuenta-creada';
 import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
 import { esDiaHabil, generarFecha } from 'src/infraestructura/utilidades/funciones-utiles';
 
-const FECHA_CREACION = generarFecha(new Date());
 const COSTO_HABITUAL_TRANSACCION = 1000;
 const PORCENTAJE = 0.20;
 const COSTO_DIA_NO_HABIL_TRANSACCION = COSTO_HABITUAL_TRANSACCION + (COSTO_HABITUAL_TRANSACCION * PORCENTAJE); // 20% more
@@ -12,15 +11,17 @@ export class Transaccion {
   readonly #costo: number;
   readonly #esCuentaOrigen: boolean;
   readonly #cuenta: CuentaCreada;
+  readonly #createdAt: Date;
 
-  constructor(valor: number, esCuentaOrigen: boolean, cuenta: CuentaCreada) {
+  constructor(valor: number, esCuentaOrigen: boolean, cuenta: CuentaCreada, createdAt: Date) {
     this.validarValor(valor);
     this.#valor = this.generarValor(valor, esCuentaOrigen);
-    this.#costo = this.generarCosto(esCuentaOrigen);
+    this.#costo = this.generarCosto(esCuentaOrigen, createdAt);
     this.#esCuentaOrigen = esCuentaOrigen;
     cuenta.actualizarSaldo(this.#valor, this.#costo);
     this.#cuenta = cuenta;
     this.validarFondos(valor);
+    this.#createdAt = createdAt;
   }
 
   private validarFondos(valor) {
@@ -36,14 +37,15 @@ export class Transaccion {
     return valor;
   }
 
-  private generarCosto(esCuentaOrigen: boolean) {
+  private generarCosto(esCuentaOrigen: boolean, createdAt: Date) {
+    const fechaCreacion = generarFecha(createdAt);
     if(!esCuentaOrigen) {
       return 0;
     }
-    if(esCuentaOrigen && esDiaHabil(FECHA_CREACION)) {
+    if(esCuentaOrigen && esDiaHabil(fechaCreacion)) {
       return COSTO_HABITUAL_TRANSACCION;
     }
-    if(esCuentaOrigen && !esDiaHabil(FECHA_CREACION)) {
+    if(esCuentaOrigen && !esDiaHabil(fechaCreacion)) {
       return COSTO_DIA_NO_HABIL_TRANSACCION;
     }
   }
@@ -72,6 +74,9 @@ export class Transaccion {
     return this.#cuenta;
   }
 
+  get createdAt(): Date {
+    return this.#createdAt;
+  }
   // private validarNumeroDigitosCuenta(tipo: string, cuenta: number) {
   //   if (cuenta.toString().length !== NUMERO_DIGITOS_CUENTA) {
   //     throw new ErrorLongitudInvalida(
