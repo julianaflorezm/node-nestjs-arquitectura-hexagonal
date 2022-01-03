@@ -12,7 +12,7 @@ export class CuentaDto {
   nombre: string;
 
   @ApiProperty({ example: 23456678 })
-  numeroCuenta: number;
+  numeroCuenta: string;
 
   @ApiProperty({ type: Date })
   createdAt: string;

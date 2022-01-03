@@ -7,10 +7,10 @@ export class ComandoRealizarTransaccion {
   public valor: number;
 
   @ApiProperty({ example: 156767, required: true })
-  public cuentaOrigen: number;
+  public cuentaOrigen: string;
 
   @ApiProperty({ example: 12344, required: true })
-  public cuentaDestino: number;
+  public cuentaDestino: string;
 
   @ApiProperty({ type: Date })
   public createdAt: Date;

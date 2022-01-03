@@ -17,7 +17,7 @@ export class RepositorioCuentaPostgres implements RepositorioCuenta {
     private readonly repositorioCuenta: Repository<CuentaEntidad>
   ) {}
   
-  async buscar(numeroCuenta: number): Promise<CuentaCreada> {
+  async buscar(numeroCuenta: string): Promise<CuentaCreada> {
     const cuenta = await this.repositorioCuenta.findOne({ where: { numeroCuenta }, relations: ['usuario'] });
     const usuarioEntidad = cuenta.usuario;
     const usuario = new UsuarioCreado(usuarioEntidad.id, usuarioEntidad.nombre, usuarioEntidad.clave, usuarioEntidad.created_at, usuarioEntidad.updated_at);
@@ -30,11 +30,11 @@ export class RepositorioCuentaPostgres implements RepositorioCuenta {
     await this.repositorioCuenta.save(cuentaEntidad);
   }
   
-  async tieneFondos(numeroCuenta: number, valor: number): Promise<boolean> {
+  async tieneFondos(numeroCuenta: string, valor: number): Promise<boolean> {
     return (await this.repositorioCuenta.findOne({ select: ['saldo'], where: { numeroCuenta }})).saldo - valor >= 0;
   }
 
-  async existeNumeroCuenta(numeroCuenta: number): Promise<boolean> {
+  async existeNumeroCuenta(numeroCuenta: string): Promise<boolean> {
     return (await this.repositorioCuenta.count({ numeroCuenta })) > 0;
   }
 

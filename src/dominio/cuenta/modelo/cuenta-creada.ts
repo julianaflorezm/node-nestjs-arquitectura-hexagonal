@@ -3,13 +3,13 @@ import { UsuarioCreado } from 'src/dominio/usuario/modelo/usuario-creado';
 export class CuentaCreada {
   readonly #id: number;
   readonly #nombre: string;
-  readonly #numeroCuenta: number;
+  readonly #numeroCuenta: string;
   #saldo: number;
   readonly #usuario: UsuarioCreado;
   readonly #createdAt: Date;
   readonly #updatedAt: Date;
 
-  constructor(id: number, nombre: string, numeroCuenta: number, saldo: number, usuario: UsuarioCreado, createdAt: Date, updatedAt: Date) {
+  constructor(id: number, nombre: string, numeroCuenta: string, saldo: number, usuario: UsuarioCreado, createdAt: Date, updatedAt: Date) {
     this.#id = id;
     this.#nombre = nombre;
     this.#numeroCuenta = numeroCuenta;
@@ -31,7 +31,7 @@ export class CuentaCreada {
     return this.#nombre;
   }
 
-  get numeroCuenta(): number {
+  get numeroCuenta(): string {
     return this.#numeroCuenta;
   }
 

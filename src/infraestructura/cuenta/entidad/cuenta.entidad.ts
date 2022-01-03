@@ -11,7 +11,7 @@ export class CuentaEntidad {
   nombre: string;
 
   @Column()
-  numeroCuenta: number;
+  numeroCuenta: string;
 
   @Column({ type: 'bigint' })
   saldo: number;

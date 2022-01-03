@@ -9,7 +9,7 @@ const HORARIO_CREACION_PERMITIDO = { INCIO: 8, FIN: 11 }
 
 export class Cuenta {
   readonly #nombre: string;
-  readonly #numeroCuenta: number;
+  readonly #numeroCuenta: string;
   readonly #saldo: number;
   readonly #usuario: UsuarioCreado;
   readonly #createdAt: Date;
@@ -48,15 +48,14 @@ export class Cuenta {
   }
 
   private generarNumeroCuenta() {
-    const base = 10;
-    return Math.floor(Math.pow(base, CANTIDAD_CARACTERES_NUMERO_CUENTA - 1) + Math.random() * (Math.pow(base, CANTIDAD_CARACTERES_NUMERO_CUENTA) - Math.pow(base, CANTIDAD_CARACTERES_NUMERO_CUENTA - 1) - 1));
+    return require('crypto').randomBytes(5).toString('hex');
   }
 
   get nombre(): string {
     return this.#nombre;
   }
 
-  get numeroCuenta(): number {
+  get numeroCuenta(): string {
     return this.#numeroCuenta;
   }
 
