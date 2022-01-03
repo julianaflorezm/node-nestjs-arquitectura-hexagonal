@@ -8,4 +8,6 @@ export abstract class RepositorioUsuario {
   abstract async guardar(usuario: Usuario): Promise<UsuarioDto>;
   abstract async buscarUsuario(id: number):  Promise<UsuarioDto>;
   abstract async buscar(id: number):  Promise<UsuarioCreado>;
+  abstract async obtenerContraseña(nombre: string): Promise<string>;
+
 }

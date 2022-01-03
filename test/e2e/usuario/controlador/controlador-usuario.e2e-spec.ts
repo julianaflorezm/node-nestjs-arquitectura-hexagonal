@@ -17,6 +17,9 @@ import { createStubObj } from '../../../util/create-object.stub';
 import { ServicioBuscarUsuario } from 'src/dominio/usuario/servicio/servicio-buscar-usuario';
 import { servicioBuscarUsuarioProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-buscar-usuario.proveedor';
 import { ManejadorBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.manejador';
+import { ManejadorValidarContraseña } from 'src/aplicacion/usuario/consulta/validar-contraseña.manejador';
+import { ServicioValidarContraseña } from 'src/dominio/usuario/servicio/servicio-validar-contraseña';
+import { servicioValidarContraseñaProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-validar-contraseña.proveedor';
 
 /**
  * Un sandbox es util cuando el módulo de nest se configura una sola vez durante el ciclo completo de pruebas
@@ -33,7 +36,7 @@ describe('Pruebas al controlador de usuarios', () => {
    * No Inyectar los módulos completos (Se trae TypeORM y genera lentitud al levantar la prueba, traer una por una las dependencias)
    **/
   beforeAll(async () => {
-    repositorioUsuario = createStubObj<RepositorioUsuario>(['existeNombreUsuario', 'guardar', 'existeUsuario', 'buscarUsuario', 'buscar'], sinonSandbox);
+    repositorioUsuario = createStubObj<RepositorioUsuario>(['existeNombreUsuario', 'guardar', 'existeUsuario', 'buscarUsuario', 'buscar', 'obtenerContraseña'], sinonSandbox);
     daoUsuario = createStubObj<DaoUsuario>(['listar'], sinonSandbox);
     const moduleRef = await Test.createTestingModule({
       controllers: [UsuarioControlador],
@@ -49,11 +52,17 @@ describe('Pruebas al controlador de usuarios', () => {
           inject: [RepositorioUsuario],
           useFactory: servicioBuscarUsuarioProveedor,
         },
+        {
+          provide: ServicioValidarContraseña,
+          inject: [RepositorioUsuario],
+          useFactory: servicioValidarContraseñaProveedor,
+        },
         { provide: RepositorioUsuario, useValue: repositorioUsuario },
         { provide: DaoUsuario, useValue: daoUsuario },
         ManejadorRegistrarUsuario,
         ManejadorListarUsuario,
-        ManejadorBuscarUsuario
+        ManejadorBuscarUsuario,
+        ManejadorValidarContraseña
       ],
     }).compile();
 
@@ -102,7 +111,7 @@ describe('Pruebas al controlador de usuarios', () => {
       nombre: 'Lorem ipsum',
       clave: '1234',
     };
-    const mensaje = `El nombre de usuario ${usuario.nombre} ya existe`;
+    const mensaje = `El nombre de usuario ${usuario.nombre.toLowerCase()} ya existe`;
     repositorioUsuario.existeNombreUsuario.returns(Promise.resolve(true));
 
     const response = await request(app.getHttpServer())

@@ -16,6 +16,9 @@ export class RepositorioUsuarioPostgres implements RepositorioUsuario {
     private readonly repositorio: Repository<UsuarioEntidad>,
     private _daoUsuario: DaoUsuario,
   ) {}
+  async obtenerContraseña(nombre: string): Promise<string> {
+    return (await this.repositorio.findOne({ select: ['clave'], where: { nombre } })).clave;
+  }
   
   async buscar(id: number): Promise<UsuarioCreado> {
     const usuario = await this.repositorio.findOne(id);

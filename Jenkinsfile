@@ -35,7 +35,7 @@ pipeline{
 			stage('Unit Test') {
 				steps {
 					echo "------------>Testing<------------"
-					sh 'npm run test:unit'
+					sh 'npm run test:cov'
 				}
 			}
 			stage('Test end-to-end') {

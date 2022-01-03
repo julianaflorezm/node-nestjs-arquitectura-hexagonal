@@ -12,17 +12,22 @@ import { UsuarioEntidad } from '../entidad/usuario.entidad';
 import { ManejadorBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.manejador';
 import { ServicioBuscarUsuario } from 'src/dominio/usuario/servicio/servicio-buscar-usuario';
 import { servicioBuscarUsuarioProveedor } from './servicio/servicio-buscar-usuario.proveedor';
+import { ServicioValidarContraseña } from 'src/dominio/usuario/servicio/servicio-validar-contraseña';
+import { servicioValidarContraseñaProveedor } from './servicio/servicio-validar-contraseña.proveedor';
+import { ManejadorValidarContraseña } from 'src/aplicacion/usuario/consulta/validar-contraseña.manejador';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UsuarioEntidad])],
   providers: [
     { provide: ServicioRegistrarUsuario, inject: [RepositorioUsuario], useFactory: servicioRegistrarUsuarioProveedor },
     { provide: ServicioBuscarUsuario, inject: [RepositorioUsuario], useFactory: servicioBuscarUsuarioProveedor },
+    { provide: ServicioValidarContraseña, inject: [RepositorioUsuario], useFactory: servicioValidarContraseñaProveedor },
     repositorioUsuarioProvider,
     daoUsuarioProvider,
     ManejadorRegistrarUsuario,
     ManejadorListarUsuario,
     ManejadorBuscarUsuario,
+    ManejadorValidarContraseña
   ],
   exports: [
     ServicioRegistrarUsuario,
@@ -30,6 +35,8 @@ import { servicioBuscarUsuarioProveedor } from './servicio/servicio-buscar-usuar
     ManejadorListarUsuario,
     ServicioBuscarUsuario,
     ManejadorBuscarUsuario,
+    ServicioValidarContraseña,
+    ManejadorValidarContraseña,
     RepositorioUsuario,
     DaoUsuario,
   ],

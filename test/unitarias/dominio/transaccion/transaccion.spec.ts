@@ -102,8 +102,8 @@ describe('Transaccion', () => {
         33333333,
         50000,
         {},
-        new Date(),
-        new Date()
+        new Date('2022-01-01 11:00:00'),
+        new Date('2022-01-01 11:00:00')
       );
       return expect(async () => new _Transaccion(100000,  true, cuenta, new Date('2022-01-01 02:00:00')))
       .rejects
@@ -118,13 +118,13 @@ describe('Transaccion', () => {
         33333333,
         50000,
         {},
-        new Date(),
-        new Date()
+        new Date('2022-01-01 11:00:00'),
+        new Date('2022-01-01 11:00:00')
       );
-      const transaccion = new _Transaccion(1000, true, cuenta);
+      const transaccion = new _Transaccion(1000, true, cuenta, new Date('2022-01-03 11:00:00'));
       expect(transaccion.valor).toEqual(-1000);
       expect(transaccion.esCuentaOrigen).toEqual(true);
-      expect(transaccion.costo).toEqual(1000 || 1200);
+      expect(transaccion.costo).toEqual(1000);
       expect(transaccion.cuenta.id).toEqual(1);
     });
 

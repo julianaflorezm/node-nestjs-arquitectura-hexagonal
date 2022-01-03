@@ -1,5 +1,6 @@
 import { ErrorLongitudInvalida } from 'src/dominio/errores/error-longitud-invalida';
 import crypto = require('crypto-js');
+import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
 
 const NUMERO_MINIMO_CARACTERES_CLAVE = 4;
 export class Usuario {
@@ -8,7 +9,7 @@ export class Usuario {
 
   constructor(nombre: string, clave: string) {
     this.validarTamanoClave(clave);
-    this.#nombre = nombre;
+    this.#nombre = nombre.toLowerCase();
     this.#clave = this.encryptarClave(clave);   
   }
 
@@ -24,6 +25,21 @@ export class Usuario {
     }
   }
 
+  public validarClave(clave) {
+    const bytes  = crypto.AES.decrypt(clave, 'secret');
+    const decrypted = bytes.toString(crypto.enc.Utf8);
+
+    const bytes2  = crypto.AES.decrypt(this.#clave, 'secret');
+    const decrypted2 = bytes2.toString(crypto.enc.Utf8);
+    
+    if(decrypted !== decrypted2) {
+      throw new ErrorDeNegocio(
+        `La contraseña no es correcta`,
+      );
+    }
+    return true;
+  }
+  
   get nombre(): string {
     return this.#nombre;
   }
