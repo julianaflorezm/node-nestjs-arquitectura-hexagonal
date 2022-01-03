@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ConsultaValidarContraseña {
+export class ConsultaValidarCLave {
   @ApiProperty({ example: 'alex' })
   public nombre: string;
 
   @ApiProperty({ example: 'xxxx' })
-  public contraseña: string;
+  public clave: string;
 
-  constructor(nombre: string, contraseña: string) {
+  constructor(nombre: string, clave: string) {
     this.nombre = nombre;
-    this.contraseña = contraseña;
+    this.clave = clave;
   }
 }

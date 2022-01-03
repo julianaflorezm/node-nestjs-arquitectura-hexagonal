@@ -1,9 +1,8 @@
 import { RepositorioUsuario } from '../puerto/repositorio/repositorio-usuario';
 import { Usuario } from '../modelo/usuario';
 import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
-import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 
-export class ServicioValidarContraseña {
+export class ServicioValidarCLave {
 
   constructor(private readonly _repositorioUsuario: RepositorioUsuario) {
   }

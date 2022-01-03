@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { RepositorioCuenta } from 'src/dominio/cuenta/puerto/repositorio/repositorio-cuenta';
 import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
 import { Transaccion } from 'src/dominio/transaccion/modelo/transaccion';
-import { TransaccionCreada } from 'src/dominio/transaccion/modelo/transaccion-creada';
 import { ServicioRealizarTransaccion } from 'src/dominio/transaccion/servicio/servicio-realizar-transaccion';
 import { TransaccionDto } from '../consulta/dto/transaccion.dto';
 import { ComandoRealizarTransaccion } from './realizar-transaccion.comando';

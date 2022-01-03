@@ -1,4 +1,3 @@
-import { date } from '@hapi/joi';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ComandoRealizarTransaccion {

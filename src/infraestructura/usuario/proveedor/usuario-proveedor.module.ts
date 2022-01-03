@@ -12,22 +12,22 @@ import { UsuarioEntidad } from '../entidad/usuario.entidad';
 import { ManejadorBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.manejador';
 import { ServicioBuscarUsuario } from 'src/dominio/usuario/servicio/servicio-buscar-usuario';
 import { servicioBuscarUsuarioProveedor } from './servicio/servicio-buscar-usuario.proveedor';
-import { ServicioValidarContraseña } from 'src/dominio/usuario/servicio/servicio-validar-contraseña';
-import { servicioValidarContraseñaProveedor } from './servicio/servicio-validar-contraseña.proveedor';
-import { ManejadorValidarContraseña } from 'src/aplicacion/usuario/consulta/validar-contraseña.manejador';
+import { ServicioValidarCLave } from 'src/dominio/usuario/servicio/servicio-validar-clave';
+import { servicioValidarClaveProveedor } from './servicio/servicio-validar-clave.proveedor';
+import { ManejadorValidarClave } from 'src/aplicacion/usuario/consulta/validar-clave.manejador';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UsuarioEntidad])],
   providers: [
     { provide: ServicioRegistrarUsuario, inject: [RepositorioUsuario], useFactory: servicioRegistrarUsuarioProveedor },
     { provide: ServicioBuscarUsuario, inject: [RepositorioUsuario], useFactory: servicioBuscarUsuarioProveedor },
-    { provide: ServicioValidarContraseña, inject: [RepositorioUsuario], useFactory: servicioValidarContraseñaProveedor },
+    { provide: ServicioValidarCLave, inject: [RepositorioUsuario], useFactory: servicioValidarClaveProveedor },
     repositorioUsuarioProvider,
     daoUsuarioProvider,
     ManejadorRegistrarUsuario,
     ManejadorListarUsuario,
     ManejadorBuscarUsuario,
-    ManejadorValidarContraseña
+    ManejadorValidarClave
   ],
   exports: [
     ServicioRegistrarUsuario,
@@ -35,8 +35,8 @@ import { ManejadorValidarContraseña } from 'src/aplicacion/usuario/consulta/val
     ManejadorListarUsuario,
     ServicioBuscarUsuario,
     ManejadorBuscarUsuario,
-    ServicioValidarContraseña,
-    ManejadorValidarContraseña,
+    ServicioValidarCLave,
+    ManejadorValidarClave,
     RepositorioUsuario,
     DaoUsuario,
   ],

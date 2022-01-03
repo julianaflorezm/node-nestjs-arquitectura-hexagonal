@@ -17,9 +17,9 @@ import { createStubObj } from '../../../util/create-object.stub';
 import { ServicioBuscarUsuario } from 'src/dominio/usuario/servicio/servicio-buscar-usuario';
 import { servicioBuscarUsuarioProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-buscar-usuario.proveedor';
 import { ManejadorBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.manejador';
-import { ManejadorValidarContraseña } from 'src/aplicacion/usuario/consulta/validar-contraseña.manejador';
-import { ServicioValidarContraseña } from 'src/dominio/usuario/servicio/servicio-validar-contraseña';
-import { servicioValidarContraseñaProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-validar-contraseña.proveedor';
+import { ManejadorValidarClave } from 'src/aplicacion/usuario/consulta/validar-clave.manejador';
+import { ServicioValidarCLave } from 'src/dominio/usuario/servicio/servicio-validar-clave';
+import { servicioValidarClaveProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-validar-clave.proveedor';
 
 /**
  * Un sandbox es util cuando el módulo de nest se configura una sola vez durante el ciclo completo de pruebas
@@ -53,16 +53,16 @@ describe('Pruebas al controlador de usuarios', () => {
           useFactory: servicioBuscarUsuarioProveedor,
         },
         {
-          provide: ServicioValidarContraseña,
+          provide: ServicioValidarCLave,
           inject: [RepositorioUsuario],
-          useFactory: servicioValidarContraseñaProveedor,
+          useFactory: servicioValidarClaveProveedor,
         },
         { provide: RepositorioUsuario, useValue: repositorioUsuario },
         { provide: DaoUsuario, useValue: daoUsuario },
         ManejadorRegistrarUsuario,
         ManejadorListarUsuario,
         ManejadorBuscarUsuario,
-        ManejadorValidarContraseña
+        ManejadorValidarClave
       ],
     }).compile();
 

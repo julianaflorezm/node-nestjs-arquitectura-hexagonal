@@ -5,8 +5,8 @@ import { ManejadorListarUsuario } from 'src/aplicacion/usuario/consulta/listar-u
 import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 import { ManejadorBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.manejador';
 import { ConsultaBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.consulta';
-import { ConsultaValidarContraseña } from 'src/aplicacion/usuario/consulta/validar-contraseña-consulta';
-import { ManejadorValidarContraseña } from 'src/aplicacion/usuario/consulta/validar-contraseña.manejador';
+import { ConsultaValidarCLave } from 'src/aplicacion/usuario/consulta/validar-clave-consulta';
+import { ManejadorValidarClave } from 'src/aplicacion/usuario/consulta/validar-clave.manejador';
 
 @Controller('usuarios')
 export class UsuarioControlador {
@@ -14,7 +14,7 @@ export class UsuarioControlador {
     private readonly _manejadorRegistrarUsuario: ManejadorRegistrarUsuario,
     private readonly _manejadorListarUsuario: ManejadorListarUsuario,
     private readonly _manejadorBuscarUsuario: ManejadorBuscarUsuario,
-    private readonly _manejadorValidarContraseña: ManejadorValidarContraseña,
+    private readonly _manejadorValidarContraseña: ManejadorValidarClave,
   ) {}
 
   @Post()
@@ -36,7 +36,7 @@ export class UsuarioControlador {
 
   @Get()
   async validarContraseña(@Query('nombre') nombre: string, @Query('clave') clave: string): Promise<boolean> {
-    const consulta = new ConsultaValidarContraseña(nombre, clave);
+    const consulta = new ConsultaValidarCLave(nombre, clave);
     return await this._manejadorValidarContraseña.ejecutar(consulta);
   }
 }

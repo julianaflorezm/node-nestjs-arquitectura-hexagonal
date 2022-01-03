@@ -4,8 +4,8 @@ import { generarFecha, esDiaHabil } from 'src/infraestructura/utilidades/funcion
 
 const SALDO_MINIMO = 50000;
 const NOMBRE_CUENTA = 'Cuenta de ahorros';
-const CANTIDAD_CARACTERES_NUMERO_CUENTA = 8;
-const HORARIO_CREACION_PERMITIDO = { INCIO: 8, FIN: 11 }
+const CANTIDAD_BYTES = 5;
+const HORARIO_CREACION_PERMITIDO = { INCIO: 8, FIN: 11 };
 
 export class Cuenta {
   readonly #nombre: string;
@@ -48,7 +48,7 @@ export class Cuenta {
   }
 
   private generarNumeroCuenta() {
-    return require('crypto').randomBytes(5).toString('hex');
+    return require('crypto').randomBytes(CANTIDAD_BYTES).toString('hex');
   }
 
   get nombre(): string {
