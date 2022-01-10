@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { SinonStubbedInstance } from "sinon";
 import { RepositorioCuenta } from "src/dominio/cuenta/puerto/repositorio/repositorio-cuenta";
 import { ServicioCrearCuenta } from "src/dominio/cuenta/servicio/servicio-crear-cuenta";
-import { RepositorioUsuario } from "src/dominio/usuario/puerto/repositorio/repositorio-usuario";
 import { createStubObj } from "test/util/create-object.stub";
 import { Cuenta } from 'src/dominio/cuenta/modelo/cuenta'; 
 
@@ -24,10 +24,10 @@ describe('ServicioCrearCuenta', () => {
           id: 1,
           nombre: 'arturo',
           clave: 'xxxx',
-          createdAt: new Date('2022-01-01 11:59:00'),
-          updatedAt: new Date('2022-01-01 11:59:00')
+          fecha_creacion: new Date('2022-01-01 11:59:00'),
+          fecha_actualizacion: new Date('2022-01-01 11:59:00')
         }
-        const cuenta = new _Cuenta(300000, usuario, new Date('2022-01-01 11:59:00'));
+        const cuenta = _Cuenta.crearCuenta(300000, 'Cuenta de ahorro', usuario, new Date('2022-01-01 11:59:00'));
 
         await servicioCrearCuenta.ejecutar(cuenta);
     

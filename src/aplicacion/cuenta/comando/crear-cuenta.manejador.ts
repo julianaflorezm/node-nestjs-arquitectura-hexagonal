@@ -12,17 +12,12 @@ export class ManejadorCrearCuenta {
     private usuarioRepositorio: RepositorioUsuario) {}
 
   async ejecutar(comandoCrearCuenta: ComandoCrearCuenta): Promise<CuentaDto> {
-    if (!await this.usuarioRepositorio.existeUsuario(comandoCrearCuenta.usuarioId)) {
-      throw new ErrorDeNegocio(
-        `El usuario no existe`,
-      );
-    }
-
     return await this._servicioCrarCuenta.ejecutar(
-      new Cuenta(
+      Cuenta.crearCuenta(
         comandoCrearCuenta.saldo,
-        await this.usuarioRepositorio.buscar(comandoCrearCuenta.usuarioId),
-        new Date(comandoCrearCuenta.createdAt)
+        comandoCrearCuenta.nombre,
+        await this.usuarioRepositorio.buscar(comandoCrearCuenta.idUsuario),
+        new Date(comandoCrearCuenta.fechaCreacion)
       )
     );
   }

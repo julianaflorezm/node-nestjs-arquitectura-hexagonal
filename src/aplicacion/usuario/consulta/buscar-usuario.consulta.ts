@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ConsultaBuscarUsuario {
-  @ApiProperty({ example: 1 })
-  public id: number;
+  @ApiProperty({ example: 'Carmen' })
+  public nombreUsuario: string;
 
-  constructor(id: number) {
-    this.id = id;
+  constructor(nombreUsuario: string) {
+    this.nombreUsuario = nombreUsuario;
   }
 }

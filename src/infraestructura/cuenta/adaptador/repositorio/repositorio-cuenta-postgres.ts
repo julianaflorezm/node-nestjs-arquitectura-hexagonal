@@ -7,8 +7,7 @@ import { RepositorioCuenta } from 'src/dominio/cuenta/puerto/repositorio/reposit
 import { Repository } from 'typeorm';
 import { CuentaEntidad } from '../../entidad/cuenta.entidad';
 import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
-import { CuentaCreada } from 'src/dominio/cuenta/modelo/cuenta-creada';
-import { UsuarioCreado } from 'src/dominio/usuario/modelo/usuario-creado';
+import { Usuario } from 'src/dominio/usuario/modelo/usuario';
 
 @Injectable()
 export class RepositorioCuentaPostgres implements RepositorioCuenta {
@@ -17,21 +16,38 @@ export class RepositorioCuentaPostgres implements RepositorioCuenta {
     private readonly repositorioCuenta: Repository<CuentaEntidad>
   ) {}
   
-  async buscar(numeroCuenta: string): Promise<CuentaCreada> {
-    const cuenta = await this.repositorioCuenta.findOne({ where: { numeroCuenta }, relations: ['usuario'] });
-    const usuarioEntidad = cuenta.usuario;
-    const usuario = new UsuarioCreado(usuarioEntidad.id, usuarioEntidad.nombre, usuarioEntidad.clave, usuarioEntidad.created_at, usuarioEntidad.updated_at);
-    return new CuentaCreada(cuenta.id, cuenta.nombre, cuenta.numeroCuenta, cuenta.saldo, usuario, cuenta.createdAt, cuenta.updatedAt);
+  async existeCuenta(id: number): Promise<boolean> {
+    return (await this.repositorioCuenta.count({ id })) > 0;
   }
 
-  async actualizarSaldo(cuenta: CuentaCreada) {
+  async listarPorUsuario(idUsuario: number): Promise<CuentaDto[]> {
+    const cuentas = await this.repositorioCuenta.find({ where: { usuario: { id: idUsuario }}, relations: ['usuario']});
+    return cuentas.map((cuentaEntidad) => {
+      const cuentaDto = new CuentaDto();
+        cuentaDto.id = cuentaEntidad.id;
+        cuentaDto.nombre = cuentaEntidad.nombre;
+        cuentaDto.numeroCuenta = cuentaEntidad.numeroCuenta;
+        cuentaDto.saldo = parseFloat(cuentaEntidad.saldo.toString());
+        cuentaDto.fechaCreacion = cuentaEntidad.fechaCreacion.toISOString();
+        cuentaDto.fechaActualizacion = cuentaEntidad.fechaActualizacion.toISOString();
+      return cuentaDto;
+    });
+  }
+  
+  async buscar(numeroCuenta: string): Promise<Cuenta> {
+    const cuenta = await this.repositorioCuenta.findOne({ where: { numeroCuenta }, relations: ['usuario'] });
+    if (!cuenta) {
+      return null;
+    }
+    const usuarioEntidad = cuenta.usuario;
+    const usuario = new Usuario(usuarioEntidad.id, usuarioEntidad.nombre, usuarioEntidad.clave, usuarioEntidad.fecha_creacion, usuarioEntidad.fecha_actualizacion);
+    return new Cuenta(cuenta.id, cuenta.nombre, cuenta.numeroCuenta, parseFloat(cuenta.saldo.toString()), usuario, cuenta.fechaCreacion, cuenta.fechaActualizacion);
+  }
+
+  async actualizarSaldo(cuenta: Cuenta) {
     const cuentaEntidad = this.repositorioCuenta.create(cuenta);
     this.repositorioCuenta.merge(cuentaEntidad);
     await this.repositorioCuenta.save(cuentaEntidad);
-  }
-  
-  async tieneFondos(numeroCuenta: string, valor: number): Promise<boolean> {
-    return (await this.repositorioCuenta.findOne({ select: ['saldo'], where: { numeroCuenta }})).saldo - valor >= 0;
   }
 
   async existeNumeroCuenta(numeroCuenta: string): Promise<boolean> {
@@ -45,8 +61,8 @@ export class RepositorioCuentaPostgres implements RepositorioCuenta {
         cuentaDto.id = cuentaCreada.id;
         cuentaDto.nombre = cuentaCreada.nombre;
         cuentaDto.numeroCuenta = cuentaCreada.numeroCuenta;
-        cuentaDto.createdAt = cuentaCreada.createdAt.toUTCString();
-        cuentaDto.updatedAt = cuentaCreada.updatedAt.toUTCString();
+        cuentaDto.fechaCreacion = cuentaCreada.fechaCreacion.toISOString();
+        cuentaDto.fechaActualizacion = cuentaCreada.fechaActualizacion.toISOString();
         const usuario = new UsuarioDto();
         usuario.id = cuentaCreada.usuario.id;
         usuario.nombre = cuentaCreada.usuario.nombre;

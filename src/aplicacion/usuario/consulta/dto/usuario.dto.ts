@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
 
 export class UsuarioDto {
 
@@ -9,8 +10,11 @@ export class UsuarioDto {
   nombre: string;
 
   @ApiProperty({ type: Date })
-  created_at: string;
+  fecha_creacion: string;
 
   @ApiProperty({ type: Date })
-  updated_at: string;
+  fecha_actualizacion: string;
+
+  @ApiProperty()
+  cuentas: CuentaDto[]
 }

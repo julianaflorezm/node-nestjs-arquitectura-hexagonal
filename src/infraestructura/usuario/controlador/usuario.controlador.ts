@@ -28,13 +28,13 @@ export class UsuarioControlador {
     return this._manejadorListarUsuario.ejecutar();
   }
 
-  @Get(':id')
-  async buscarUsuario(@Param('id') id: number): Promise<UsuarioDto> {
-    const consulta = new ConsultaBuscarUsuario(id);
+  @Get()
+  async buscarUsuario(@Query('nombreUsuario') nombreUsuario: string): Promise<UsuarioDto> {
+    const consulta = new ConsultaBuscarUsuario(nombreUsuario);
     return this._manejadorBuscarUsuario.ejecutar(consulta);
   }
 
-  @Get()
+  @Get('validate-clave')
   async validarContraseña(@Query('nombre') nombre: string, @Query('clave') clave: string): Promise<boolean> {
     const consulta = new ConsultaValidarCLave(nombre, clave);
     return await this._manejadorValidarContraseña.ejecutar(consulta);

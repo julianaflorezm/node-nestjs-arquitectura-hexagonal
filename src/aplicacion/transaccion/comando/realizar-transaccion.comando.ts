@@ -12,5 +12,5 @@ export class ComandoRealizarTransaccion {
   public cuentaDestino: string;
 
   @ApiProperty({ type: Date })
-  public createdAt: Date;
+  public fechaCreacion: Date;
 }

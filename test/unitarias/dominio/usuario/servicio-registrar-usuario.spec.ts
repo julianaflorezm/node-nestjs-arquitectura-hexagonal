@@ -21,13 +21,13 @@ describe('ServicioRegistrarUsuario', () => {
 
     await expect(
       servicioRegistrarUsuario.ejecutar(
-        new Usuario('juan', '1234'),
+        Usuario.register('juan', '1234'),
       ),
     ).rejects.toThrow('El nombre de usuario juan ya existe');
   });
 
   it('si el nombre no existe guarda el usuario el repositorio', async () => {
-    const usuario = new Usuario('juan', '1234');
+    const usuario = Usuario.register('juan', '1234');
     repositorioUsuarioStub.existeNombreUsuario.returns(Promise.resolve(false));
 
     await servicioRegistrarUsuario.ejecutar(usuario);

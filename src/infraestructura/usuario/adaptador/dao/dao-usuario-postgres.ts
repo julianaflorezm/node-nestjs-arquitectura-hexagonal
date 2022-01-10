@@ -11,11 +11,11 @@ export class DaoUsuarioPostgres implements DaoUsuario {
     private readonly entityManager: EntityManager,
   ) {}
 
-  buscarUsuario(id: number): Promise<UsuarioDto> {
-     return this.entityManager.query(`SELECT id, nombre, created_at, updated_at FROM public.user where id = ${id}`);
+  buscarUsuario(nombreUsuario: string): Promise<UsuarioDto> {
+     return this.entityManager.query(`SELECT id, nombre, fecha_creacion, fecha_actualizacion FROM public.user where nombre = '${nombreUsuario}'`);
   }
 
   async listar(): Promise<UsuarioDto[]> {
-    return this.entityManager.query('SELECT id, nombre, created_at, updated_at FROM public.user');
+    return this.entityManager.query('SELECT id, nombre, fecha_creacion, fecha_actualizacion FROM public.user');
   }
 }

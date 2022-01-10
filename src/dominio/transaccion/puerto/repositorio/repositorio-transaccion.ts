@@ -1,6 +1,7 @@
+import { TransaccionDto } from 'src/aplicacion/transaccion/consulta/dto/transaccion.dto';
 import { Transaccion } from '../../modelo/transaccion';
-import { TransaccionCreada } from '../../modelo/transaccion-creada';
 
 export abstract class RepositorioTransaccion {
-    abstract async realizarTransaccion(transaccion: Transaccion): Promise<TransaccionCreada>;
+    abstract async realizarTransaccion(transaccion: Transaccion): Promise<Transaccion>;
+    abstract async listarPorCuenta(id: number): Promise<TransaccionDto[]>;
 }

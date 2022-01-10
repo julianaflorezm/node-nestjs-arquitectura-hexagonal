@@ -16,10 +16,10 @@ export class TransaccionEntidad {
   esCuentaOrigen: boolean;
   
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-  createdAt: Date;
+  fechaCreacion: Date;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
-  updatedAt: Date;
+  fechaActualizacion: Date;
 
   @ManyToOne(() => CuentaEntidad, cuenta => cuenta.transacciones)
   cuenta: CuentaEntidad;

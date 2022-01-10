@@ -1,43 +1,68 @@
-import { CuentaCreada } from 'src/dominio/cuenta/modelo/cuenta-creada';
+import { Cuenta } from 'src/dominio/cuenta/modelo/cuenta';
 import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
-import { esDiaHabil, generarFecha } from 'src/infraestructura/utilidades/funciones-utiles';
+import { esDiaHabil, generarFecha } from 'src/dominio/manejo-fechas/funciones-de-fecha';
 
 const COSTO_HABITUAL_TRANSACCION = 1000;
 const PORCENTAJE = 0.20;
 const COSTO_DIA_NO_HABIL_TRANSACCION = COSTO_HABITUAL_TRANSACCION + (COSTO_HABITUAL_TRANSACCION * PORCENTAJE); // 20% more
 
 export class Transaccion {
+  readonly #id: number;
   readonly #valor: number;
   readonly #costo: number;
   readonly #esCuentaOrigen: boolean;
-  readonly #cuenta: CuentaCreada;
-  readonly #createdAt: Date;
+  readonly #cuenta: Cuenta;
+  readonly #fechaCreacion: Date;
+  readonly #fechaActualizacion: Date;
 
-  constructor(valor: number, esCuentaOrigen: boolean, cuenta: CuentaCreada, createdAt: Date) {
-    this.validarValor(valor);
-    this.#valor = this.generarValor(valor, esCuentaOrigen);
-    this.#costo = this.generarCosto(esCuentaOrigen, createdAt);
+  constructor(id: number, valor: number, costo: number, esCuentaOrigen: boolean, cuenta: Cuenta, fechaCreacion: Date, fechaActualizacion: Date) {
+    this.#id = id;
+    this.#valor = valor;
+    this.#costo = costo;
     this.#esCuentaOrigen = esCuentaOrigen;
-    cuenta.actualizarSaldo(this.#valor, this.#costo);
     this.#cuenta = cuenta;
-    this.validarFondos(valor);
-    this.#createdAt = createdAt;
+    this.#fechaCreacion = fechaCreacion;
+    this.#fechaActualizacion = fechaActualizacion;
   }
 
-  private validarFondos(valor) {
-    if(this.#esCuentaOrigen && this.#cuenta.saldo - (valor + this.#costo) < 0) {
+  static crearTransaccion(valor: number, esCuentaOrigen: boolean, cuenta: Cuenta, fechaCreacion: Date) {
+    this.cuentaExiste(esCuentaOrigen, cuenta);
+    this.validarValor(valor);
+    const costo = this.generarCosto(esCuentaOrigen, fechaCreacion);
+    this.validarFondos(esCuentaOrigen, cuenta.saldo, valor, costo);
+    valor = this.generarValor(valor, esCuentaOrigen);
+    cuenta.actualizarSaldo(valor, costo);
+    const id = 0;
+    const fechaActualizacion = new Date('');
+    return new this(id, valor, costo, esCuentaOrigen, cuenta, fechaCreacion, fechaActualizacion);
+  }
+
+  static cuentaExiste(esCuentaOrigen: boolean, cuenta: Cuenta) {
+    if (!cuenta && esCuentaOrigen) {
+      throw new ErrorDeNegocio(
+        `La cuenta origen no existe`,
+      );
+    } else if (!cuenta && !esCuentaOrigen) {
+      throw new ErrorDeNegocio(
+        `La cuenta destino no existe`,
+      );
+    }
+  }
+
+  static validarFondos(esCuentaOrigen: boolean, saldo: number, valor: number, costo: number) {
+    if(esCuentaOrigen && saldo - (valor + costo) < 0) {
       throw new ErrorDeNegocio('No tienes fondos suficientes para realizar la transacción.');
     }
   }
 
-  private generarValor(valor: number, esCuentaOrigen: boolean) {
+  static generarValor(valor: number, esCuentaOrigen: boolean) {
     if(esCuentaOrigen) {
       return - valor;
     }
     return valor;
   }
 
-  private generarCosto(esCuentaOrigen: boolean, createdAt: Date) {
+  static generarCosto(esCuentaOrigen: boolean, createdAt: Date) {
     const fechaCreacion = generarFecha(createdAt);
     if(!esCuentaOrigen) {
       return 0;
@@ -50,12 +75,16 @@ export class Transaccion {
     }
   }
   
-  private validarValor(valor: number) {
+  static validarValor(valor: number) {
     if(valor <= 0) {
       throw new ErrorDeNegocio(
         `El valor de la transacción debe ser mayor a cero.`
       );
     }
+  }
+
+  get id(): number {
+    return this.#id;
   }
 
   get valor(): number {
@@ -70,29 +99,15 @@ export class Transaccion {
     return this.#esCuentaOrigen;
   }
 
-  get cuenta(): CuentaCreada {
+  get cuenta(): Cuenta {
     return this.#cuenta;
   }
 
-  get createdAt(): Date {
-    return this.#createdAt;
+  get fechaCreacion(): Date {
+    return this.#fechaCreacion;
   }
-  // private validarNumeroDigitosCuenta(tipo: string, cuenta: number) {
-  //   if (cuenta.toString().length !== NUMERO_DIGITOS_CUENTA) {
-  //     throw new ErrorLongitudInvalida(
-  //       `El número de la ${tipo} debe tener ${NUMERO_DIGITOS_CUENTA} dígitos.`,
-  //     );
-  //   }
-  //   return cuenta;
-  // }
 
- 
-
-  // private validarIgualdad(cuentaOrigen: number, cuentaDestino: number) {
-  //   if(cuentaOrigen === cuentaDestino) {
-  //     throw new ErrorDeNegocio(
-  //       `La cuenta origen y la cuenta destino no deben ser iguales`,
-  //     );
-  //   }
-  // }
+  get fechaActualizacion(): Date {
+    return this.#fechaActualizacion;
+  }
 }

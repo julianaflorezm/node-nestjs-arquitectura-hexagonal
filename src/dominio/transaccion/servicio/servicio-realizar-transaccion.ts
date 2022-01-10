@@ -2,6 +2,7 @@ import { CuentaDto } from 'src/aplicacion/cuenta/consulta/dto/cuenta.dto';
 import { TransaccionDto } from 'src/aplicacion/transaccion/consulta/dto/transaccion.dto';
 import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 import { RepositorioCuenta } from 'src/dominio/cuenta/puerto/repositorio/repositorio-cuenta';
+import { ErrorDeNegocio } from 'src/dominio/errores/error-de-negocio';
 import { Transaccion } from '../modelo/transaccion';
 import { RepositorioTransaccion } from '../puerto/repositorio/repositorio-transaccion';
 
@@ -12,6 +13,12 @@ export class ServicioRealizarTransaccion {
     }
   
     async ejecutar(transaccionOrigen: Transaccion, transaccionDestino: Transaccion): Promise<TransaccionDto>{
+
+      if(transaccionOrigen.cuenta.numeroCuenta === transaccionDestino.cuenta.numeroCuenta) {
+        throw new ErrorDeNegocio(
+          `La cuenta origen y la cuenta destino no deben ser iguales`,
+        );
+      }
       const transOrgCreada = await this._repositorioTransaccion.realizarTransaccion(transaccionOrigen);
       const transDesCreada = await this._repositorioTransaccion.realizarTransaccion(transaccionDestino);
       const cuentaOrg = transOrgCreada.cuenta;
@@ -37,13 +44,13 @@ export class ServicioRealizarTransaccion {
       usuarioDes.nombre = cuentaDes.usuario.nombre;
       destino.usuario = usuarioDes;
 
-      return new TransaccionDto(
-        transOrgCreada.id,
-        transDesCreada.valor,
-        transOrgCreada.costo,
-        transOrgCreada.createdAt.toUTCString(),
-        origen,
-        destino,
-      );
+      const transaccion = new TransaccionDto();
+      transaccion.id = transOrgCreada.id;
+      transaccion.valor = transDesCreada.valor;
+      transaccion.costo = transOrgCreada.costo;
+      transaccion.fechaCreacion = transOrgCreada.fechaCreacion.toISOString();
+      transaccion.origen = origen;
+      transaccion.destino = destino;
+      return transaccion;
     }
   }

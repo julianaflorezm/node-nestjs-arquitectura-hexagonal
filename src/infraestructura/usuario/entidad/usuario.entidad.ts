@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { CuentaEntidad } from 'src/infraestructura/cuenta/entidad/cuenta.entidad';
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
@@ -13,11 +14,11 @@ export class UsuarioEntidad {
   clave: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-  created_at: Date;
+  fecha_creacion: Date;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
-  updated_at: Date;
+  fecha_actualizacion: Date;
 
-  @OneToMany(() => CuentaEntidad, cuenta => cuenta.usuario, { cascade: true })
+  @OneToMany(() => CuentaEntidad, cuenta => cuenta.usuario)
   cuentas: CuentaEntidad[];
 }

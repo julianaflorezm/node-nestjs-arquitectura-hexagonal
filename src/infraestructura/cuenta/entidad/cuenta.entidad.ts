@@ -7,7 +7,7 @@ export class CuentaEntidad {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: 'Cuenta de ahorros' })
+  @Column({ default: 'Cuenta de ahorro' })
   nombre: string;
 
   @Column()
@@ -17,10 +17,10 @@ export class CuentaEntidad {
   saldo: number;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
-  createdAt: Date;
+  fechaCreacion: Date;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
-  updatedAt: Date;
+  fechaActualizacion: Date;
 
   @ManyToOne(() => UsuarioEntidad, usuario => usuario.cuentas)
   usuario: UsuarioEntidad;

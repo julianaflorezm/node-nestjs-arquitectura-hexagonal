@@ -9,10 +9,10 @@ export class ManejadorValidarClave {
 
   async ejecutar(consultaValidarContraseña: ConsultaValidarCLave): Promise<boolean> {
     return await this._servicioValidarContraseña.ejecutar(
-        new Usuario(
-            consultaValidarContraseña.nombre,
-            consultaValidarContraseña.clave
-        )
+      Usuario.register(
+        consultaValidarContraseña.nombre,
+        consultaValidarContraseña.clave
+      )
     );
   }
 }

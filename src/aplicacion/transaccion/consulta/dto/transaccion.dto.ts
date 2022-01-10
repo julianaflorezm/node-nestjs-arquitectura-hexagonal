@@ -13,8 +13,11 @@ export class TransaccionDto {
     @ApiProperty({ example: 20000 })
     costo: number;
   
+    @ApiProperty({ example: true })
+    esCuentaOrigen: boolean;
+
     @ApiProperty({ type: Date })
-    createdAt: string;
+    fechaCreacion: string;
 
     @ApiProperty()
     origen: CuentaDto;
@@ -22,12 +25,4 @@ export class TransaccionDto {
     @ApiProperty()
     destino: CuentaDto;
 
-    constructor(id: number, valor: number, costo: number, createdAt: string, origen: CuentaDto, destino: CuentaDto) {
-        this.id = id;
-        this.valor = valor;
-        this.costo = costo;
-        this.createdAt = createdAt;
-        this.origen = origen;
-        this.destino = destino;
-    }
 }

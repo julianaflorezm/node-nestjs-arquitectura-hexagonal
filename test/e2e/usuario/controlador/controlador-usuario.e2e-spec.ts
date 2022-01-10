@@ -20,6 +20,7 @@ import { ManejadorBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-u
 import { ManejadorValidarClave } from 'src/aplicacion/usuario/consulta/validar-clave.manejador';
 import { ServicioValidarCLave } from 'src/dominio/usuario/servicio/servicio-validar-clave';
 import { servicioValidarClaveProveedor } from 'src/infraestructura/usuario/proveedor/servicio/servicio-validar-clave.proveedor';
+import { ConsultaBuscarUsuario } from 'src/aplicacion/usuario/consulta/buscar-usuario.consulta';
 
 /**
  * Un sandbox es util cuando el módulo de nest se configura una sola vez durante el ciclo completo de pruebas
@@ -83,7 +84,7 @@ describe('Pruebas al controlador de usuarios', () => {
 
   it('debería listar los usuarios registrados', () => {
 
-    const usuarios: any[] = [{ id: 3, nombre: "Sara", /* eslint-disable-next-line @typescript-eslint/camelcase*/ created_at: "2021-12-20T02:15:49.397Z", /* eslint-disable-next-line @typescript-eslint/camelcase*/ updated_at: "2021-12-20T02:15:49.397Z" }];
+    const usuarios: any[] = [{ id: 3, nombre: "Sara", /* eslint-disable-next-line @typescript-eslint/camelcase*/ fecha_creacion: "2021-12-20T02:15:49.397Z", /* eslint-disable-next-line @typescript-eslint/camelcase*/ fecha_actualizacion: "2021-12-20T02:15:49.397Z" }];
     daoUsuario.listar.returns(Promise.resolve(usuarios));
     
     return request(app.getHttpServer())
@@ -97,7 +98,7 @@ describe('Pruebas al controlador de usuarios', () => {
       nombre: 'Lorem ipsum',
       clave: '123',
     };
-    const mensaje = 'El tamaño mínimo de la clave debe ser 4';
+    const mensaje = 'El tamaño mínimo de la clave debe ser 4 caracteres';
 
     const response = await request(app.getHttpServer())
       .post('/usuarios').send(usuario)
@@ -136,13 +137,15 @@ describe('Pruebas al controlador de usuarios', () => {
   });
 
   it('debería fallar al buscar un usuario no existente', async () => {
-    const id = 2;
+    const consulta: ConsultaBuscarUsuario = {
+      nombreUsuario: 'carlos',
+    };
 
-    const mensaje = `El usuario no existe`;
-    repositorioUsuario.existeUsuario.returns(Promise.resolve(false));
+    const mensaje = `No hay ningún usuario registrado con ese nombre`;
+    repositorioUsuario.existeNombreUsuario.returns(Promise.resolve(false));
 
     const response = await request(app.getHttpServer())
-      .get('/usuarios/' + id).send()
+      .get('/usuarios/').send(consulta)
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body.message).toBe(mensaje);
@@ -150,13 +153,14 @@ describe('Pruebas al controlador de usuarios', () => {
   });
 
   it('debería buscar un usuario existente', async () => {
-    const id = 2;
+    const consulta: ConsultaBuscarUsuario = {
+      nombreUsuario: 'carlos',
+    };
 
-    repositorioUsuario.existeUsuario.returns(Promise.resolve(true));
+    repositorioUsuario.existeNombreUsuario.returns(Promise.resolve(true));
 
     return request(app.getHttpServer())
-      .get('/usuarios/' + id)
+      .get('/usuarios/').send(consulta)
       .expect(HttpStatus.OK);
-
   });
 });

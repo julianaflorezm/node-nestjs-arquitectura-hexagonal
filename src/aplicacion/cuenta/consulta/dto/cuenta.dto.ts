@@ -14,12 +14,15 @@ export class CuentaDto {
   @ApiProperty({ example: 23456678 })
   numeroCuenta: string;
 
-  @ApiProperty({ type: Date })
-  createdAt: string;
+  @ApiProperty()
+  saldo: number;
 
   @ApiProperty({ type: Date })
-  updatedAt: string;
+  fechaCreacion: string;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ type: Date })
+  fechaActualizacion: string;
+
+  @ApiProperty({ type: () => UsuarioDto })
   usuario: UsuarioDto;
 }

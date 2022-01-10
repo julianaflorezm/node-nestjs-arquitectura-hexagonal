@@ -10,7 +10,7 @@ export class ManejadorRegistrarUsuario {
 
   async ejecutar(comandoRegistrarUsuario: ComandoRegistrarUsuario): Promise<UsuarioDto> {
     return await this._servicioRegistrarUsuario.ejecutar(
-      new Usuario(
+      Usuario.register(
         comandoRegistrarUsuario.nombre,
         comandoRegistrarUsuario.clave,
       ),

@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { UsuarioDto } from 'src/aplicacion/usuario/consulta/dto/usuario.dto';
 import { DaoUsuario } from 'src/dominio/usuario/puerto/dao/dao-usuario';
-import { UsuarioCreado } from 'src/dominio/usuario/modelo/usuario-creado';
 
 @Injectable()
 export class RepositorioUsuarioPostgres implements RepositorioUsuario {
@@ -16,21 +15,25 @@ export class RepositorioUsuarioPostgres implements RepositorioUsuario {
     private readonly repositorio: Repository<UsuarioEntidad>,
     private _daoUsuario: DaoUsuario,
   ) {}
+
   async obtenerContraseña(nombre: string): Promise<string> {
     return (await this.repositorio.findOne({ select: ['clave'], where: { nombre } })).clave;
   }
   
-  async buscar(id: number): Promise<UsuarioCreado> {
-    const usuario = await this.repositorio.findOne(id);
-    return new UsuarioCreado(usuario.id, usuario.nombre, usuario.clave, usuario.created_at, usuario.updated_at);
+  async buscar(idUsuario: number): Promise<Usuario> {
+    const usuario = await this.repositorio.findOne(idUsuario);
+    if(!usuario) {
+      return null;
+    }
+    return new Usuario(usuario.id, usuario.nombre, usuario.clave, usuario.fecha_creacion, usuario.fecha_actualizacion);
   }
 
   async existeUsuario(id: number): Promise<boolean> {
     return (await this.repositorio.count({ id })) > 0;
   }
 
-  buscarUsuario(id: number): Promise<UsuarioDto> {
-    return this._daoUsuario.buscarUsuario(id);
+  buscarUsuario(nombreUsuario: string): Promise<UsuarioDto> {
+    return this._daoUsuario.buscarUsuario(nombreUsuario);
   }
 
   async existeNombreUsuario(nombre: string): Promise<boolean> {
@@ -45,8 +48,8 @@ export class RepositorioUsuarioPostgres implements RepositorioUsuario {
     const userCreated = new UsuarioDto();
     userCreated.id = user.id;
     userCreated.nombre = user.nombre;
-    userCreated.created_at = user.created_at.toUTCString();
-    userCreated.updated_at = user.updated_at.toUTCString();
+    userCreated.fecha_creacion = user.fecha_creacion.toISOString();
+    userCreated.fecha_actualizacion = user.fecha_actualizacion.toISOString();
     return userCreated;
   }
 }

@@ -1,4 +1,4 @@
-import { esDiaHabil, esFestivo, generarFecha } from "src/infraestructura/utilidades/funciones-utiles";
+import { esDiaHabil, esFestivo, generarFecha } from "src/dominio/manejo-fechas/funciones-de-fecha";
 
 describe('Funciones utiles', () => {
 

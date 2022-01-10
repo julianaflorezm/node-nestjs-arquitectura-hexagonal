@@ -12,6 +12,10 @@ import { servicioCrearCuentaProveedor } from 'src/infraestructura/cuenta/proveed
 import { FiltroExcepcionesDeNegocio } from 'src/infraestructura/excepciones/filtro-excepciones-negocio';
 import { createStubObj } from 'test/util/create-object.stub';
 import * as request from 'supertest';
+import { ManejadorListarCuentasPorUsuario } from 'src/aplicacion/cuenta/consulta/listar-cuentas-por-usuario.manejador';
+import { ServicioListarCuentasPorUsuario } from 'src/dominio/cuenta/servicio/servicio-listar-cuentas-por-usuario';
+import { servicioListarCuentasPorUsuarioProveedor } from 'src/infraestructura/cuenta/proveedor/servicio/servicio-listar-cuentas-por-usuario.proveedor';
+import { Usuario } from 'src/dominio/usuario/modelo/usuario';
 /**
  * Un sandbox es util cuando el módulo de nest se configura una sola vez durante el ciclo completo de pruebas
  * */
@@ -38,9 +42,15 @@ import * as request from 'supertest';
            inject: [RepositorioCuenta, RepositorioUsuario],
            useFactory: servicioCrearCuentaProveedor,
          },
+         {
+          provide: ServicioListarCuentasPorUsuario,
+          inject: [RepositorioCuenta, RepositorioUsuario],
+          useFactory: servicioListarCuentasPorUsuarioProveedor,
+        },
          { provide: RepositorioCuenta, useValue: repositorioCuenta },
          { provide: RepositorioUsuario, useValue: repositorioUsuario },
          ManejadorCrearCuenta,
+         ManejadorListarCuentasPorUsuario
        ],
      }).compile();
  
@@ -62,12 +72,12 @@ import * as request from 'supertest';
    it('debería fallar al crear una cuenta de un usuario no existente', async () => {
       const cuenta: ComandoCrearCuenta = {
         saldo: 100000,
-        usuarioId: 1,
+        nombre: 'Cuenta de ahorro',
+        idUsuario: 1,
+        fechaCreacion: new Date('2022-01-11 10:00:00').toISOString()
       };
-      const mensaje = 'El usuario no existe';
-  
-     repositorioUsuario.existeUsuario.returns(Promise.resolve(false));
- 
+      const mensaje = 'El usuario no está registrado';
+
      const response = await request(app.getHttpServer())
        .post('/cuentas').send(cuenta)
        .expect(HttpStatus.BAD_REQUEST);
@@ -76,37 +86,54 @@ import * as request from 'supertest';
      expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
    });
  
-   it('debería crear una cuenta de un usuario existente', async () => {
+   it('debería crear una cuenta', async () => {
     const cuenta: ComandoCrearCuenta = {
-        saldo: 100000,
-        usuarioId: 1,
-      };
+      saldo: 100000,
+      nombre: 'Cuenta de ahorro',
+      idUsuario: 1,
+      fechaCreacion: new Date('2022-01-11 10:00:00').toISOString()
+    };
 
-     repositorioUsuario.existeUsuario.returns(Promise.resolve(true));
- 
+    repositorioUsuario.buscar.returns(Promise.resolve(new Usuario(1, 'juan', '45gg67hy', new Date('2022-01-03'), new Date('2022-01-03'))));
 
      return await request(app.getHttpServer())
        .post('/cuentas').send(cuenta)
        .expect(HttpStatus.CREATED);
    });
+
+   it('debería fallar al crear una cuenta un día no hábil fuera del horario permitido', async () => {
+    const cuenta: ComandoCrearCuenta = {
+      saldo: 100000,
+      nombre: 'Cuenta de ahorro',
+      idUsuario: 1,
+      fechaCreacion: new Date('2022-01-01 02:00:00').toISOString()
+    };
+
+    const mensaje = 'El horario para crear una cuenta los días no hábiles es de 8:00 am a 12:00 am.';
+    repositorioUsuario.buscar.returns(Promise.resolve(new Usuario(1, 'juan', '45gg67hy', new Date('2022-01-03'), new Date('2022-01-03'))));
+
+    const response = await request(app.getHttpServer())
+      .post('/cuentas').send(cuenta)
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body.message).toBe(mensaje);
+    expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
+   });
    
    it('debería fallar al crear una cuenta con un saldo inicial menor a lo requerido', async () => {
-     const cuenta: ComandoCrearCuenta = {
-       saldo: 1000,
-       usuarioId: 1,
-     };
-     repositorioUsuario.existeUsuario.returns(Promise.resolve(true));
- 
-     const mensaje = 'El saldo inicial debe ser no menor a 50000';
- 
+    const cuenta: ComandoCrearCuenta = {
+      saldo: 40000,
+      nombre: 'Cuenta de ahorro',
+      idUsuario: 1,
+      fechaCreacion: new Date('2022-01-01 11:00:00').toISOString()
+    };
+     const mensaje = 'El saldo inicial debe ser no menor a $50000';
+     repositorioUsuario.buscar.returns(Promise.resolve(new Usuario(1, 'juan', '45gg67hy', new Date('2022-01-03'), new Date('2022-01-03'))));
+
      const response = await request(app.getHttpServer())
        .post('/cuentas').send(cuenta)
        .expect(HttpStatus.BAD_REQUEST);
      expect(response.body.message).toBe(mensaje);
      expect(response.body.statusCode).toBe(HttpStatus.BAD_REQUEST);
    });
- 
- 
- 
-
  });

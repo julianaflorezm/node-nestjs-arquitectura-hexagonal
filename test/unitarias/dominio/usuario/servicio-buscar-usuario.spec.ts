@@ -9,28 +9,27 @@ describe('ServicioBuscarUsuario', () => {
     let repositorioUsuarioStub: SinonStubbedInstance<RepositorioUsuario>;
   
     beforeEach(() => {
-  
-      repositorioUsuarioStub = createStubObj<RepositorioUsuario>(['existeUsuario', 'buscarUsuario']);
+      repositorioUsuarioStub = createStubObj<RepositorioUsuario>(['existeNombreUsuario', 'buscarUsuario']);
       servicioBuscarUsuario = new ServicioBuscarUsuario(repositorioUsuarioStub);
     });
   
     it('si el usuario no existe deberia retonar error', async () => {
   
-      repositorioUsuarioStub.existeUsuario.returns(Promise.resolve(false));
+      repositorioUsuarioStub.existeNombreUsuario.returns(Promise.resolve(false));
   
       await expect(
-        servicioBuscarUsuario.ejecutar(1),
-      ).rejects.toThrow(`El usuario no existe`);
+        servicioBuscarUsuario.ejecutar('juan'),
+      ).rejects.toThrow(`No hay ningún usuario registrado con ese nombre`);
     });
   
     it('si el usuario existe lo busca en el repositorio', async () => {
-      const id = 1;
-      repositorioUsuarioStub.existeUsuario.returns(Promise.resolve(true));
+      const nombre = 'juan';
+      repositorioUsuarioStub.existeNombreUsuario.returns(Promise.resolve(true));
   
-      await servicioBuscarUsuario.ejecutar(id);
+      await servicioBuscarUsuario.ejecutar(nombre);
   
       expect(repositorioUsuarioStub.buscarUsuario.getCalls().length).toBe(1);
-      expect(repositorioUsuarioStub.buscarUsuario.calledWith(id)).toBeTruthy();
+      expect(repositorioUsuarioStub.buscarUsuario.calledWith(nombre)).toBeTruthy();
     });
   });
   
