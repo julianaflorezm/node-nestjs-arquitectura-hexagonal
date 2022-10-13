@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { EnvVariables } from './infraestructura/configuracion/environment/env-variables.enum';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   const logger = await app.resolve(AppLogger);
   const configService = app.get(ConfigService);
 

@@ -9,8 +9,6 @@ export const databaseConfigFactory = (configService: ConfigService) => ({
   password: configService.get(EnvVariables.DATABASE_PASSWORD),
   database: configService.get(EnvVariables.DATABASE_NAME),
   entities: [configService.get(EnvVariables.TYPEORM_ENTITIES_DIR)],
-  // retryDelay: 3000,
-  // retryAttempts:10,
   migrationsTableName: configService.get(EnvVariables.TYPEORM_MIGRATIONS_TABLENAME),
   migrations: [configService.get(EnvVariables.TYPEORM_MIGRATIONS_DIR)],
   cli: {

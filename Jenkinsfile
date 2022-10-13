@@ -1,3 +1,4 @@
+@Library('ceiba-jenkins-library')
 pipeline{
 	
 		agent {
@@ -19,41 +20,56 @@ pipeline{
 			stage('Checkout') {
 				steps {
                 echo '------------>Checkout desde Git Microservicio<------------'
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], gitTool: 'Default' , submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'GitHub_boterojuanpa', url: 'https://github.com/boterojuanpa/node-jest-arquitectura-hexagonal']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], gitTool: 'Default' , submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'GitHub_julianaflorezm', url: 'https://github.com/julianaflorezm/node-nestjs-arquitectura-hexagonal']]])
 				}
 			}
 		
 		
-			stage('compilar '){
-                steps {
-                    sh 'npm i'
-                    sh 'npm run build'					
+			stage('NPM Install') {
+				steps {
+					echo "------------>Installing<------------"
+					sh 'npm install'
 				}
-            }
-            stage('test '){
-                steps {
-                    sh 'npm run test:cov'					
-				}
-            }
+			}
 
+			stage('Unit Test') {
+				steps {
+					echo "------------>Testing<------------"
+					sh 'npm run test:unit'
+				}
+			}
+			stage('Test end-to-end') {
+				steps{
+					echo "------------>Testing Protractor<------------"
+					sh 'npm run test:e2e'
+				}
+			}
+
+			stage('Static Code Analysis') {
+				steps{
+					sonarqubeMasQualityGatesP(sonarKey:'co.com.ceiba.adn:banco-juliana.florez', 
+					sonarName:'CeibaADN-Banco.juliana.florez', 
+					sonarPathProperties:'./sonar-project.properties')
+				}
+			}
+		
+			stage('Build') {
+				steps {
+					echo "------------>Building<------------"
+					sh 'npm run build'
+				}
+			}
 			
-			 stage('Sonar Analysis'){
-			 	steps{
-			 		echo '------------>Analisis de código estático<------------'
-			 		  withSonarQubeEnv('Sonar') {
-                         sh "${tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'}/bin/sonar-scanner -Dsonar.projectKey=co.com.cliente:proyecto.nombre.apellido.master -Dsonar.projectName=co.com.cliente:proyecto.nombre.apellido.master -Dproject.settings=./sonar-project.properties"
-                      }
-			 	}
-			 }
-		
-		
-
 		}
 		post {
 			failure {
-				mail(to: 'juan.botero@ceiba.com.co',
+				mail(to: 'juliana.florez@ceiba.com.co',
 				body:"Build failed in Jenkins: Project: ${env.JOB_NAME} Build /n Number: ${env.BUILD_NUMBER} URL de build: ${env.BUILD_NUMBER}/n/nPlease go to ${env.BUILD_URL} and verify the build",
 				subject: "ERROR CI: ${env.JOB_NAME}")
+			}
+			success {
+				echo 'This will run only if successful'
+				junit 'build/test-results/test/*.xml' //RUTA RELATIVA DE LOS ARCHIVOS .XML
 			}
 		}	
 			

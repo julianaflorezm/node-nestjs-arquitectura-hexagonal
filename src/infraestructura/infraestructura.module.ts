@@ -6,6 +6,8 @@ import { AppLogger } from './configuracion/ceiba-logger.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NodeEnv } from './configuracion/environment/env-node.enum';
 import { databaseConfigFactory } from './configuracion/database.config';
+import { CuentaModule } from './cuenta/cuenta.module';
+import { TransaccionModule } from './transaccion/transaccion.module';
 
 @Module({
   providers: [AppLogger],
@@ -24,6 +26,8 @@ import { databaseConfigFactory } from './configuracion/database.config';
       }),
     }),
     UsuarioModule,
+    CuentaModule,
+    TransaccionModule,
   ],
 })
 export class InfraestructuraModule {
