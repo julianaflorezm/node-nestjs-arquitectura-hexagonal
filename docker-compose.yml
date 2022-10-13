@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      - POSTGRES_DB=bank
+      - POSTGRES_USER=bank
+      - POSTGRES_PASSWORD=bank
+    ports:
+      - '5432:5432'
+    volumes: 
+      - postgresql-volume:/var/lib/postgresql/data
+volumes:
+  postgresql-volume:
+    external: true
